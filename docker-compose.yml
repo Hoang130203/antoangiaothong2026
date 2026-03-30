@@ -11,7 +11,7 @@ services:
     volumes:
       - h2-data:/app/data
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/atgt;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/atgt;DB_CLOSE_ON_EXIT=FALSE
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
