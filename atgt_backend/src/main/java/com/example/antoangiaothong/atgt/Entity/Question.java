@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter@Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "question")
@@ -15,26 +16,27 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Column(name = "question",columnDefinition = "nvarchar(max)")
+
+    @Column(name = "question", columnDefinition = "TEXT")
     private String question;
 
-    @Column(name = "choice_1",columnDefinition = "nvarchar(max)")
+    @Column(name = "choice_1", columnDefinition = "TEXT")
     private String choice1;
 
-    @Column(name = "choice_2",columnDefinition = "nvarchar(max)")
+    @Column(name = "choice_2", columnDefinition = "TEXT")
     private String choice2;
 
-    @Column(name = "choice_3",columnDefinition = "nvarchar(max)")
+    @Column(name = "choice_3", columnDefinition = "TEXT")
     private String choice3;
 
-    @Column(name = "choice_4",columnDefinition = "nvarchar(max)")
+    @Column(name = "choice_4", columnDefinition = "TEXT")
     private String choice4;
 
-    @Column(name="answer",columnDefinition = "nvarchar(max)")
+    @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "exam")
     private Exam exam;
 
@@ -48,7 +50,6 @@ public class Question {
                 ", choice3='" + choice3 + '\'' +
                 ", choice4='" + choice4 + '\'' +
                 ", answer='" + answer + '\'' +
-                ", exam=" + exam +
                 '}';
     }
 }
