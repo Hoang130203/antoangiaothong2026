@@ -166,12 +166,25 @@ export default function Header() {
               ))}
               <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
                 {user ? (
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/10 text-white text-sm font-medium"
-                  >
-                    <LogOut className="w-4 h-4" /> Đăng xuất
-                  </button>
+                  <>
+                    <Link href="/info" onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-all">
+                      {avatar ? (
+                        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2 border-orange-400" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
+                          <User className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                      <span className="text-white text-sm font-medium">{user}</span>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/10 text-white text-sm font-medium"
+                    >
+                      <LogOut className="w-4 h-4" /> Đăng xuất
+                    </button>
+                  </>
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setMenuOpen(false)}
