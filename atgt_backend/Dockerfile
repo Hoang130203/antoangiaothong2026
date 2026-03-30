@@ -1,12 +1,27 @@
-# Build stage
-FROM maven:3.8.3-openjdk-17 AS build
+# ---- Build Stage ----
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
-COPY . /app/
-RUN mvn clean package
+# Cache dependencies first (layer caching optimization)
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+# Build app
+COPY src ./src
+RUN mvn clean package -DskipTests -q
 
-# Package stage
-FROM openjdk:17-alpine
+# ---- Runtime Stage ----
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
+
+# Create data directory for H2 file persistence
+RUN mkdir -p /app/data
+
 COPY --from=build /app/target/*.jar /app/app.jar
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+EXPOSE 8086
+
+ENTRYPOINT ["java", \
+  "-XX:+UseSerialGC", \
+  "-Xmx256m", \
+  "-Xms64m", \
+  "-XX:MaxMetaspaceSize=128m", \
+  "-jar", "app.jar"]
