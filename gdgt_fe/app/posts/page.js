@@ -22,13 +22,14 @@ export default function Posts() {
   const [listPost, setListPost] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  let avatar, user;
-  try {
-    avatar = typeof window !== 'undefined' ? localStorage.getItem('avatar') : null;
-    user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-  } catch {}
+  const [avatar, setAvatar] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    try {
+      setAvatar(localStorage.getItem('avatar'));
+      setUser(localStorage.getItem('user'));
+    } catch {}
     Api.getPost()
       .then((res) => {
         setListPost(res?.data.reverse());

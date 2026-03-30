@@ -37,10 +37,10 @@ export default function Exams() {
   const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [rankExam, setRankExam] = useState(null);
-  let isAdmin;
-  try { isAdmin = typeof window !== 'undefined' ? localStorage.getItem('account') === 'admin' : false; } catch {}
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    try { setIsAdmin(localStorage.getItem('account') === 'admin'); } catch {}
     Api.getListExams().then((res) => {
       setListExams(res.data);
       setLoaded(true);

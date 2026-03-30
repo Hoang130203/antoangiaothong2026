@@ -22,13 +22,14 @@ export default function Videos() {
   const [listVideos, setListVideos] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  let avatar, isAdmin;
-  try {
-    avatar = typeof window !== 'undefined' ? localStorage.getItem('avatar') : null;
-    isAdmin = typeof window !== 'undefined' ? localStorage.getItem('account') === 'admin' : false;
-  } catch {}
+  const [avatar, setAvatar] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    try {
+      setAvatar(localStorage.getItem('avatar'));
+      setIsAdmin(localStorage.getItem('account') === 'admin');
+    } catch {}
     Api.getAllVideo()
       .then((res) => {
         setListVideos(res.data?.reverse());
