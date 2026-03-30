@@ -19,6 +19,9 @@ public class UploadController {
 
     private final String UPLOAD_DIR = "/app/data/uploads/";
 
+    @org.springframework.beans.factory.annotation.Value("${app.base-url:http://localhost:8086}")
+    private String baseUrl;
+
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -34,11 +37,11 @@ public class UploadController {
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String newFilename = UUID.randomUUID().toString() + extension;
-            
+
             Path filePath = Paths.get(UPLOAD_DIR + newFilename);
             Files.write(filePath, file.getBytes());
 
-            String fileUrl = "http://localhost:8086/uploads/" + newFilename;
+            String fileUrl = baseUrl + "/uploads/" + newFilename;
             Map<String, String> response = new HashMap<>();
             response.put("url", fileUrl);
 
