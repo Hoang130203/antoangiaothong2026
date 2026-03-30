@@ -30,7 +30,8 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:3001",
                 "https://gdgt.maiminhhoang.id.vn",
-                "https://antoangiaothong2026.vercel.app"
+                "https://antoangiaothong2026.vercel.app",
+                "https://atgt-hoang.duckdns.org"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

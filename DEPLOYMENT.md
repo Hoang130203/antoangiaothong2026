@@ -129,7 +129,7 @@ cd antoangiaothong2026
 mkdir -p atgt_backend/data/uploads
 
 # Chạy backend (thay IP thực của VM)
-APP_BASE_URL=http://35.202.114.15:8086 docker compose up -d --build backend
+APP_BASE_URL=https://atgt-hoang.duckdns.org docker compose up -d --build backend
 
 # Kiểm tra
 docker ps
@@ -150,7 +150,7 @@ gcloud compute ssh atgt-backend --zone=us-central1-a --project=educonnect-eb7c6
 # Trên VM:
 cd ~/antoangiaothong2026
 git pull origin main
-APP_BASE_URL=http://35.202.114.15:8086 docker compose up -d --build backend
+APP_BASE_URL=https://atgt-hoang.duckdns.org docker compose up -d --build backend
 ```
 
 ### 2.6 Cấu hình Frontend (Vercel)
@@ -159,7 +159,7 @@ Vào **Vercel Dashboard → Project → Settings → Environment Variables**, th
 
 | Key | Value |
 |-----|-------|
-| `NEXT_PUBLIC_API_URL` | `http://35.202.114.15:8086` |
+| `NEXT_PUBLIC_API_URL` | `https://atgt-hoang.duckdns.org` |
 
 Sau đó **Redeploy** project trên Vercel.
 
