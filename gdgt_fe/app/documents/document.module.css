@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "28 Days Later";
+  src: url("../../static-fonts/28\ Days\ Later.ttf");
+}
+@font-face {
+  font-family: "Insomnia";
+  src: url("../../static-fonts/Insomnia.ttf");
+}
+@font-face {
+  font-family: "Blood";
+  src: url("../../static-fonts/Blood.ttf");
+}
+@font-face {
+  font-family: "bleeding_cowboys";
+  src: url("../../static-fonts/Bleeding_Cowboys.ttf");
+}
+@font-face {
+  font-family: "Flame";
+  src: url("../../static-fonts/Flame.ttf");
+}
+.content {
+  font-family: "Flame", sans-serif;
+  font-family: "bleeding_cowboys", sans-serif;
+  font-size: 2.5em;
+  color: #f4303af3;
+  text-align: center; /* Canh giữa */
+  text-indent: 20px; /* Khoảng cách từ lề trái */
+  text-justify: inter-word;
+  text-rendering: optimizeLegibility;
+  align-items: flex-start;
+  background-color: rgba(11, 11, 11, 0.841);
+}

@@ -1,0 +1,12 @@
+.img_video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: border-radius 0.3s;
+}
+.img_video:hover {
+  border-radius: 0px;
+  opacity: 0.8;
+}

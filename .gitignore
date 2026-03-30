@@ -1,0 +1,30 @@
+# Backend
+atgt_backend/target/
+atgt_backend/.mvn/wrapper/maven-wrapper.jar
+atgt_backend/data/
+*.jar
+*.class
+
+# H2 database files
+*.mv.db
+*.trace.db
+
+# Frontend
+gdgt_fe/node_modules/
+gdgt_fe/.next/
+gdgt_fe/out/
+gdgt_fe/.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,23 @@
+/* components/EmojiRain.module.css */
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.emoji {
+  position: absolute;
+  font-size: 20px;
+  animation: emoji-fall linear infinite;
+}
+
+@keyframes emoji-fall {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}

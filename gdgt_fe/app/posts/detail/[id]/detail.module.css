@@ -1,0 +1,15 @@
+.outline_reaction {
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+  border-radius: 20px;
+  background-color: #e5e5e5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.outline_reaction_active {
+  scale: 1.21;
+  background-color: #8ca1b18d;
+}
