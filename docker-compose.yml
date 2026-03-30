@@ -7,7 +7,7 @@ services:
     ports:
       - "8086:8086"
     volumes:
-      - h2-data:/app/data
+      - ./atgt_backend/data:/app/data
     environment:
       - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/atgt;DB_CLOSE_ON_EXIT=FALSE
       - SPRING_DATASOURCE_USERNAME=sa
@@ -23,6 +23,4 @@ services:
       retries: 3
       start_period: 40s
 
-volumes:
-  h2-data:
-    driver: local
+# volumes section removed — using bind mount instead of named volume
