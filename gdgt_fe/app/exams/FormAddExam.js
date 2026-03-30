@@ -47,7 +47,12 @@ export default function AddExam({ handleClose, onSuccess }) {
     }
     try {
       const res = await Api.postExam(name, parseInt(time), parseInt(max), exam);
-      const newExam = res?.data || { id: Date.now(), name, time: parseInt(time), maxTimes: parseInt(max) };
+      const newExam = {
+        id: res?.data?.id || Date.now(),
+        name,
+        time: parseInt(time),
+        maxTimes: parseInt(max),
+      };
       if (onSuccess) onSuccess(newExam);
       handleClose();
     } catch {

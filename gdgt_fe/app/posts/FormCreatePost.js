@@ -44,9 +44,10 @@ export default function FormPost({ handleClick, onSuccess }) {
         imageUrl = uploadRes.data.url;
       }
       const res = await Api.upPost(title, inputStr, imageUrl);
-      // Optimistic: use server response if available, otherwise construct locally
-      const newPost = res?.data || {
-        id: Date.now(),
+      // Always build locally so we have all fields (user.name, image, etc.)
+      // Use server-generated id if available
+      const newPost = {
+        id: res?.data?.id || Date.now(),
         title,
         content: inputStr,
         image: imageUrl,

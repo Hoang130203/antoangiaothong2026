@@ -21,16 +21,24 @@ export default function Header() {
   const [avatar, setAvatar] = useState(null);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  const syncAuth = () => {
     try {
       setUser(localStorage.getItem('user'));
       setAvatar(localStorage.getItem('avatar'));
     } catch {}
+  };
+
+  useEffect(() => {
+    syncAuth();
     setMounted(true);
 
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('auth-update', syncAuth);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('auth-update', syncAuth);
+    };
   }, []);
 
   const handleLogout = async () => {

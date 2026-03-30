@@ -4,10 +4,12 @@ import { motion } from 'framer-motion';
 import { Camera, Save, User } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
+import Toast from '@/components/ui/Toast';
 import Api from '../api/api';
 
 export default function Info() {
   const [isChanged, setIsChanged] = useState(false);
+  const [toast, setToast] = useState(null);
   const [gender, setGender] = useState(true);
   const [avt, setAvt] = useState('');
   const [file, setFile] = useState(null);
@@ -46,17 +48,28 @@ export default function Info() {
     try {
       const res = await Api.PostImage(file);
       await Api.updateAvatar(res.data.url);
-      alert('Đổi ảnh đại diện thành công');
-    } catch { alert('Lỗi khi đổi ảnh'); }
-    finally { setIsPosting(false); }
+      // Update localStorage + notify Header to re-render
+      localStorage.setItem('avatar', res.data.url);
+      window.dispatchEvent(new CustomEvent('auth-update'));
+      setAvt(res.data.url);
+      setFile(null);
+      setToast({ message: 'Đổi ảnh đại diện thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Lỗi khi đổi ảnh, thử lại!', type: 'error' });
+    } finally { setIsPosting(false); }
   };
 
   const updateInfo = async () => {
     setIsChanged(false);
     try {
       await Api.updateInfo(email, password, names, school, avt, gender, classs);
-      alert('Cập nhật thành công');
-    } catch { alert('Cập nhật thất bại'); }
+      // Update name in localStorage + notify Header
+      localStorage.setItem('user', names);
+      window.dispatchEvent(new CustomEvent('auth-update'));
+      setToast({ message: 'Cập nhật thông tin thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Cập nhật thất bại, thử lại!', type: 'error' });
+    }
   };
 
   const inputClass = 'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none text-sm text-slate-700 transition-all';
@@ -138,6 +151,7 @@ export default function Info() {
           </div>
         </div>
       </div>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </PageWrapper>
   );
 }
