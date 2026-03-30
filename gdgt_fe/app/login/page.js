@@ -1,138 +1,121 @@
-'use client'
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import SigninButton from '../../components/SigninButton';
+import { motion } from 'framer-motion';
+import { ShieldCheck, LogIn, Eye, EyeOff } from 'lucide-react';
 import Api from '../api/api.js';
-
-
-
-
-const defaultTheme = createTheme();
+import SigninButton from '../../components/SigninButton';
 
 export default function SignIn() {
-    const [account, setAccount] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            account: data.get('account'),
-            password: data.get('password'),
-        });
-    };
-    const handleLogin = () => {
-        try {
-            Api.login(account, password, '0')
-                .then(res => {
-                    if (res.status === 200) {
-                        console.log("Login success")
-                        console.log(res.data)
-                        localStorage.setItem('user', res.data.name)
-                        localStorage.setItem('info', res.data.id)
-                        localStorage.setItem('account', res.data.account)
-                        localStorage.setItem('password', res.data.password)
-                        localStorage.setItem('avatar', res.data.avatar)
-                        window.location.href = "/"
-                    }
-                    else {
-                        alert("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập")
-                    }
-                }).catch
-                (error => {
-                    alert("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập")
-                })
+  const [account, setAccount] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-
-        } catch (error) {
-            alert("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin đăng nhập")
-        }
+  const handleLogin = async () => {
+    if (!account || !password) {
+      alert('Vui lòng điền đầy đủ thông tin');
+      return;
     }
-    return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs" >
-                <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        height: '100vh'
-                    }}
-                >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5" >
-                        Sign in
-                    </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="account"
-                            label="Tài khoản"
-                            name="account"
-                            autoComplete="account"
-                            autoFocus
-                            value={account}
-                            onChange={(e) => setAccount(e.target.value)}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Mật khẩu"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
-                        <SigninButton></SigninButton>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            onClick={handleLogin}
-                        >
-                            Đăng nhập
-                        </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Quên mật khẩu?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="/signup" variant="body2">
-                                    {"Chưa có tài khoản? Đăng ký"}
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Box>
+    setLoading(true);
+    try {
+      const res = await Api.login(account, password, '0');
+      if (res.status === 200) {
+        localStorage.setItem('user', res.data.name);
+        localStorage.setItem('info', res.data.id);
+        localStorage.setItem('account', res.data.account);
+        localStorage.setItem('password', res.data.password);
+        localStorage.setItem('avatar', res.data.avatar);
+        window.location.href = '/';
+      } else {
+        alert('Đăng nhập thất bại, vui lòng kiểm tra lại thông tin');
+      }
+    } catch {
+      alert('Đăng nhập thất bại, vui lòng kiểm tra lại thông tin');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            </Container>
-        </ThemeProvider>
-    );
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: 'linear-gradient(135deg, #0f1d33 0%, #1a2b4a 60%, #1e3a5f 100%)' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex p-3 rounded-2xl bg-orange-500/20 mb-3">
+            <ShieldCheck className="w-8 h-8 text-orange-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-white">An Toàn Giao Thông</h1>
+          <p className="text-slate-400 text-sm mt-1">Đăng nhập để tiếp tục</p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
+          <h2 className="text-xl font-bold text-slate-800 mb-6">Đăng nhập</h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Tài khoản</label>
+              <input
+                id="account"
+                type="text"
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
+                placeholder="Nhập tài khoản..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Mật khẩu</label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                  placeholder="Nhập mật khẩu..."
+                  className="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+                />
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleLogin}
+            disabled={loading}
+            className="mt-6 w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            <LogIn className="w-4 h-4" />
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+          </motion.button>
+
+          {/* Google signin */}
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+            <div className="relative flex justify-center"><span className="bg-white px-3 text-xs text-slate-400">hoặc</span></div>
+          </div>
+          <SigninButton />
+
+          <p className="mt-5 text-center text-sm text-slate-500">
+            Chưa có tài khoản?{' '}
+            <Link href="/signup" className="text-orange-500 hover:text-orange-600 font-semibold">
+              Đăng ký ngay
+            </Link>
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
 }

@@ -1,100 +1,145 @@
-'use client'
-import { Avatar, Divider, Grid, Popover, Typography } from "@mui/material";
-import styles from './post.module.css'
-import { useEffect, useState } from "react";
-import FormPost from "./FormCreatePost";
-import Post from "./post";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { Clock, User, Plus, X } from 'lucide-react';
+import PageWrapper from '@/components/ui/PageWrapper';
+import SectionTitle from '@/components/ui/SectionTitle';
+import Card from '@/components/ui/Card';
 import Api from '../api/api';
-function Posts() {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [listPost, setListPost] = useState([
-    ])
-    const [loaded, setLoaded] = useState(false)
+import FormPost from './FormCreatePost';
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
+export default function Posts() {
+  const [listPost, setListPost] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  let avatar, user;
+  try {
+    avatar = typeof window !== 'undefined' ? localStorage.getItem('avatar') : null;
+    user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  } catch {}
+
+  useEffect(() => {
+    Api.getPost()
+      .then((res) => {
+        setListPost(res?.data.reverse());
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
     try {
-        var avatar = localStorage.getItem('avatar')
-    } catch (error) {
-        console.log(error)
-    }
-    const handleClick = (event) => {
-        console.log('abc')
-        setAnchorEl(event.currentTarget);
-    };
+      return new Date(dateStr).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch { return dateStr; }
+  };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  return (
+    <PageWrapper>
+      {!loaded && (
+        <div className="loader_container">
+          <div className="loader_spinner" />
+        </div>
+      )}
 
-    const open = Boolean(anchorEl);
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <SectionTitle subtitle="Các bài viết về an toàn giao thông">Bài Viết</SectionTitle>
 
-    useEffect(() => {
-        // Fetch data when component mounts
-        Api.getPost()
-            .then(response => {
-                // Set listPost state with data from API response
-                setListPost(response?.data.reverse());
-                setLoaded(true)
-            })
-            .catch(error => {
-                console.error("Error fetching posts:", error);
-            });
-    }, [])
-    return (
-        <Grid container style={{ minHeight: '800px', display: 'flex', justifyContent: 'center', paddingTop: '40px' }}>
-            <div style={{ display: `${loaded ? 'none' : 'fixed'}` }} className="loader_container">
-                <div className="loader_" ></div>
+        {/* Create post bar */}
+        {user && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-8 flex items-center gap-3">
+            {avatar ? (
+              <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-orange-200" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <User className="w-5 h-5 text-orange-500" />
+              </div>
+            )}
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex-1 text-left px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-300 text-slate-400 hover:text-slate-600 text-sm transition-all"
+            >
+              Đăng bài viết mới về an toàn giao thông...
+            </button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowForm(true)}
+              className="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition-all"
+            >
+              <Plus className="w-5 h-5" />
+            </motion.button>
+          </div>
+        )}
+
+        {/* Form Modal */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
+            <div className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" style={{ backgroundColor: 'rgba(26,43,74,0.5)' }} />
+            <div className="relative z-10 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 hover:text-slate-700 z-20">
+                <X className="w-4 h-4" />
+              </button>
+              <FormPost handleClick={() => setShowForm(false)} />
             </div>
-            <Grid container item style={{ width: '800px', height: '130px', maxWidth: '92%', backgroundColor: '#fff', marginBottom: '20px' }} className={styles.border_div}>
-                <Grid item container display='flex' justifyContent='center' padding='10px 0px' >
-                    <Grid item xs={2} md={1}>
-                        <Avatar style={{ width: '45px', height: '45px', marginRight: '20px' }} src={avatar}></Avatar>
-                    </Grid>
-                    <Grid item xs={9} md={10} >
-                        <button className={styles.button_newpost} onClick={handleClick}>
-                            <Typography>Đăng bài viết mới!</Typography>
-                        </button>
-                        {open && <div className={styles.form_overlay} onClick={handleClose}></div>}
+          </div>
+        )}
 
-                        <Popover
-                            anchorReference="anchorPosition"
-                            anchorPosition={{ top: 300, left: 800 }}
-                            open={open}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            style={{ width: '0px', height: '0px' }}
-                        >
-                            <FormPost handleClick={handleClose} />
-                        </Popover>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                    <Divider />
-                </Grid>
-                <Grid item container alignItems='center'>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/yF/r/v1iF2605Cb5.png?_nc_eui2=AeEW76pCPuQhAZiqT9L93eEQ3Eh3Wgl8GJPcSHdaCXwYk44HWuEJDgJ8PxIE11OlidU2aMel8Tb25Azn2wWGRLTi"></img>
-                    </Grid>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/yC/r/a6OjkIIE-R0.png?_nc_eui2=AeHYQhKsSC3wpWPDa-ABRgB1fK5Z1qDG7FV8rlnWoMbsVZ1ukwvLstFJoiCIQnb9eDwyl7MoTpI2y6BWL18lNkRE"></img>
-                    </Grid>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/eQV2iXPmmtj.png?_nc_eui2=AeHOJt0qh-SKJN-pXtrja-VbCQLHsh12NTkJAseyHXY1OZuoWmeWwFqvO-Te94eJXt0Exy_3bSRmEql6IctFViKF"></img>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid container justifyContent='center'>
-                {listPost.map((item, index) => (
-                    <Post key={index} id={item.id} title={item.title} image={item.image} time={item.time} username={item.user.name} useravatar={item.user.avatar} />
-                ))}
-            </Grid>
-        </Grid>
-    );
+        {/* Post list */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={loaded ? 'show' : 'hidden'}
+          className="space-y-4"
+        >
+          {listPost.map((item) => (
+            <motion.div key={item.id} variants={itemVariants}>
+              <Link href={`/posts/detail/${item.id}`}>
+                <Card padding="p-0" className="overflow-hidden">
+                  <div className="flex gap-4 p-5">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-24 h-20 rounded-xl object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-800 text-base leading-snug mb-2 line-clamp-2 hover:text-orange-500 transition-colors">
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center gap-4 text-xs text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <User className="w-3.5 h-3.5" />
+                          {item.user?.name}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          {formatDate(item.time)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
+          {loaded && listPost.length === 0 && (
+            <div className="text-center py-16 text-slate-400">
+              <p className="text-lg">Chưa có bài viết nào.</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </PageWrapper>
+  );
 }
-
-export default Posts;

@@ -1,146 +1,134 @@
-'use client'
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from 'next/link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Api from '../api/api.js';
+'use client';
 import { useState } from 'react';
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { ShieldCheck, UserPlus, Eye, EyeOff } from 'lucide-react';
+import Api from '../api/api.js';
 
 export default function SignUp() {
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-    };
-    const handleSignUp = () => {
-        try {
-            Api.register(email, password, firstName + " " + lastName)
-                .then(res => {
-                    if (res.status === 200) {
-                        alert("Dang ky thanh cong")
-                        console.log(res.data)
-                        window.location.href = "/login"
-                    }
-                })
-        }
-        catch (error) {
-            alert("Dang ky that bai")
-        }
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSignUp = async () => {
+    if (!firstName || !email || !password) {
+      alert('Vui lòng điền đầy đủ thông tin');
+      return;
     }
+    setLoading(true);
+    try {
+      const res = await Api.register(email, password, `${firstName} ${lastName}`.trim());
+      if (res.status === 200) {
+        alert('Đăng ký thành công!');
+        window.location.href = '/login';
+      } else {
+        alert('Đăng ký thất bại');
+      }
+    } catch {
+      alert('Đăng ký thất bại, vui lòng thử lại');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs" style={{ height: '100vh' }}>
-                <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Sign up
-                    </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    autoComplete="given-name"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="Họ"
-                                    autoFocus
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                    required
-                                    fullWidth
-                                    id="lastName"
-                                    label="Tên"
-                                    name="lastName"
-                                    autoComplete="family-name"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="Email"
-                                    name="email"
-                                    autoComplete="email"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="Mật khẩu"
-                                    type="password"
-                                    id="password"
-                                    autoComplete="new-password"
-                                />
-                            </Grid>
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: 'linear-gradient(135deg, #0f1d33 0%, #1a2b4a 60%, #1e3a5f 100%)' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex p-3 rounded-2xl bg-orange-500/20 mb-3">
+            <ShieldCheck className="w-8 h-8 text-orange-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-white">An Toàn Giao Thông</h1>
+          <p className="text-slate-400 text-sm mt-1">Tạo tài khoản mới</p>
+        </div>
 
-                        </Grid>
-                        <Button
-                            onClick={handleSignUp}
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Đăng ký
-                        </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Link href="/login" variant="body2" >
-                                    Đã có tài khoản? Đăng nhập
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Box>
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8">
+          <h2 className="text-xl font-bold text-slate-800 mb-6">Đăng ký</h2>
 
-            </Container>
-        </ThemeProvider>
-    );
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1.5">Họ</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Họ..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1.5">Tên</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Tên..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Mật khẩu</label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Nhập mật khẩu..."
+                  className="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-slate-800 text-sm"
+                />
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={handleSignUp}
+            disabled={loading}
+            className="mt-6 w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            <UserPlus className="w-4 h-4" />
+            {loading ? 'Đang đăng ký...' : 'Đăng ký'}
+          </motion.button>
+
+          <p className="mt-5 text-center text-sm text-slate-500">
+            Đã có tài khoản?{' '}
+            <Link href="/login" className="text-orange-500 hover:text-orange-600 font-semibold">
+              Đăng nhập
+            </Link>
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
 }

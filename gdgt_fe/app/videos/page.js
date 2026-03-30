@@ -1,95 +1,127 @@
-'use client'
-import { Avatar, Divider, Grid, Popover, Typography } from "@mui/material";
-import Video from "./video";
-import FormPost from "../posts/FormCreatePost";
-import { useEffect, useState } from "react";
-import styles from '../posts/post.module.css'
-import FormVideo from "./FormVideo";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Plus, X, Play } from 'lucide-react';
+import PageWrapper from '@/components/ui/PageWrapper';
+import SectionTitle from '@/components/ui/SectionTitle';
+import Card from '@/components/ui/Card';
 import Api from '../api/api';
-function Videos() {
-    const [listVideos, setListVideos] = useState([])
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [loaded, setLoaded] = useState(false)
-    const handleClick = (event) => {
-        console.log('abc')
-        setAnchorEl(event.currentTarget);
-    };
+import FormVideo from './FormVideo';
+import Link from 'next/link';
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    try {
-        var avatar = localStorage.getItem('avatar')
-        var isAdmin = (localStorage.getItem('account') == 'admin') ? true : false
-    } catch (error) {
-        console.log(error)
-    }
-    useEffect(() => {
-        Api.getAllVideo()
-            .then(response => {
-                setListVideos(response.data?.reverse());
-                setLoaded(true)
-            })
-            .catch(error => {
-                console.error("Error fetching videos:", error);
-            });
-    }, [])
-    const open = Boolean(anchorEl);
-    return (
-        <Grid container justifyContent='center' style={{ minHeight: '800px' }} paddingTop='30px'>
-            <div style={{ display: `${loaded ? 'none' : 'fixed'}` }} className="loader_container">
-                <div className="loader_" ></div>
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
+};
+
+export default function Videos() {
+  const [listVideos, setListVideos] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  let avatar, isAdmin;
+  try {
+    avatar = typeof window !== 'undefined' ? localStorage.getItem('avatar') : null;
+    isAdmin = typeof window !== 'undefined' ? localStorage.getItem('account') === 'admin' : false;
+  } catch {}
+
+  useEffect(() => {
+    Api.getAllVideo()
+      .then((res) => {
+        setListVideos(res.data?.reverse());
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  return (
+    <PageWrapper>
+      {!loaded && (
+        <div className="loader_container">
+          <div className="loader_spinner" />
+        </div>
+      )}
+
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        <div className="flex items-center justify-between mb-8">
+          <SectionTitle subtitle="Video hướng dẫn an toàn giao thông">Video</SectionTitle>
+          {isAdmin && (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+            >
+              <Plus className="w-4 h-4" /> Thêm video
+            </motion.button>
+          )}
+        </div>
+
+        {/* Form Modal */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
+            <div className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" style={{ backgroundColor: 'rgba(26,43,74,0.5)' }} />
+            <div className="relative z-10 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+              <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 z-20">
+                <X className="w-4 h-4" />
+              </button>
+              <FormVideo handleClick={() => setShowForm(false)} />
             </div>
-            {isAdmin && <Grid container item style={{ width: '800px', maxWidth: '80%', height: '130px', maxWidth: '92%', backgroundColor: '#fff', marginBottom: '20px' }} className={styles.border_div}>
-                <Grid item container display='flex' justifyContent='center' padding='10px 0px' >
-                    <Grid item xs={2} md={1}>
-                        <Avatar style={{ width: '45px', height: '45px', marginRight: '20px' }} src={avatar}></Avatar>
-                    </Grid>
-                    <Grid item xs={9} md={10} >
-                        <button className={styles.button_newpost} onClick={handleClick}>
-                            <Typography>Đăng video mới!</Typography>
-                        </button>
-                        {open && <div className={styles.form_overlay} onClick={handleClose}></div>}
+          </div>
+        )}
 
-                        <Popover
-                            open={open}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            style={{ width: '0px', height: '0px' }}
-                        >
-                            <FormVideo handleClick={handleClose} />
-                        </Popover>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                    <Divider />
-                </Grid>
-                <Grid item container alignItems='center'>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/yF/r/v1iF2605Cb5.png?_nc_eui2=AeEW76pCPuQhAZiqT9L93eEQ3Eh3Wgl8GJPcSHdaCXwYk44HWuEJDgJ8PxIE11OlidU2aMel8Tb25Azn2wWGRLTi"></img>
-                    </Grid>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/yC/r/a6OjkIIE-R0.png?_nc_eui2=AeHYQhKsSC3wpWPDa-ABRgB1fK5Z1qDG7FV8rlnWoMbsVZ1ukwvLstFJoiCIQnb9eDwyl7MoTpI2y6BWL18lNkRE"></img>
-                    </Grid>
-                    <Grid item xs={4} container justifyContent='center' height='80%'>
-                        <img width='24px'
-                            src="https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/eQV2iXPmmtj.png?_nc_eui2=AeHOJt0qh-SKJN-pXtrja-VbCQLHsh12NTkJAseyHXY1OZuoWmeWwFqvO-Te94eJXt0Exy_3bSRmEql6IctFViKF"></img>
-                    </Grid>
-                </Grid>
-            </Grid>}
-            <Grid container item xs={11} md={9}>
-                {listVideos.map((item, index) => (
-                    <Video key={index} id={item?.id} title={item?.title} avatar={item?.owner.avatar} youtubeId={item?.youtubeId} />
-                ))}
-            </Grid>
-        </Grid>
-    );
+        {/* Video Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={loaded ? 'show' : 'hidden'}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {listVideos.map((item) => (
+            <motion.div key={item?.id} variants={itemVariants}>
+              <Link href={`/videos/detail/${item?.id}`}>
+                <Card padding="p-0" className="overflow-hidden group cursor-pointer">
+                  {/* Thumbnail */}
+                  <div className="relative aspect-video bg-slate-900">
+                    <img
+                      src={`https://img.youtube.com/vi/${item?.youtubeId}/mqdefault.jpg`}
+                      alt={item?.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-navy-900/40 group-hover:bg-navy-900/20 transition-all flex items-center justify-center">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center shadow-lg"
+                      >
+                        <Play className="w-5 h-5 text-white ml-0.5" />
+                      </motion.div>
+                    </div>
+                  </div>
+                  {/* Info */}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-slate-800 text-sm leading-snug line-clamp-2 group-hover:text-orange-500 transition-colors">
+                      {item?.title}
+                    </h3>
+                    {item?.owner?.avatar && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <img src={item.owner.avatar} alt="" className="w-5 h-5 rounded-full" />
+                        <span className="text-xs text-slate-400">{item?.owner?.name}</span>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
+          {loaded && listVideos.length === 0 && (
+            <div className="col-span-3 text-center py-16 text-slate-400">
+              <p className="text-lg">Chưa có video nào.</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </PageWrapper>
+  );
 }
-
-export default Videos;

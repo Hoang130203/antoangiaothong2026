@@ -1,173 +1,185 @@
-'use client'
-import { Box, Button, Grid, Popover, Tab, Tabs, Typography, useMediaQuery } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import AddExam from "./FormAddExam";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { Plus, X, Clock, ClipboardList, Trophy } from 'lucide-react';
+import PageWrapper from '@/components/ui/PageWrapper';
+import SectionTitle from '@/components/ui/SectionTitle';
+import Card from '@/components/ui/Card';
+import Badge from '@/components/ui/Badge';
 import Api from '../api/api';
-import dynamic from "next/dynamic";
-import FormPost from "../posts/FormCreatePost";
+import AddExam from './FormAddExam';
 import Rank from './rank';
-// import { Document, Page } from "react-pdf";
-// const PDFViewer = dynamic(() => import("../../components/pdf-viewer"), {
-//     ssr: false
-// });
-const image = require('../../public/detailed.png')
-function CustomTabPanel(props) {
-    const { children, value, index, ...other } = props;
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box sx={{ overflow: 'auto' }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
+const getDifficultyColor = (time) => {
+  if (time <= 10) return 'green';
+  if (time <= 20) return 'amber';
+  return 'red';
+};
+const getDifficultyLabel = (time) => {
+  if (time <= 10) return 'Dễ';
+  if (time <= 20) return 'Trung bình';
+  return 'Khó';
+};
+
+export default function Exams() {
+  const [tab, setTab] = useState(0);
+  const [listExams, setListExams] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [rankExam, setRankExam] = useState(null);
+  let isAdmin;
+  try { isAdmin = typeof window !== 'undefined' ? localStorage.getItem('account') === 'admin' : false; } catch {}
+
+  useEffect(() => {
+    Api.getListExams().then((res) => {
+      setListExams(res.data);
+      setLoaded(true);
+    }).catch(() => setLoaded(true));
+  }, []);
+
+  return (
+    <PageWrapper>
+      {!loaded && (
+        <div className="loader_container">
+          <div className="loader_spinner" />
         </div>
-    );
-}
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
+      )}
 
-function Exams() {
-    const [value, setValue] = useState(0);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [loaded, setLoaded] = useState(false)
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-    const [listExams, setListExams] = useState([]) // [
-    const xs = useMediaQuery('(max-width:800px)');
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 border-b border-slate-200">
+          {['Danh sách đề thi', 'Kết quả của tôi'].map((label, i) => (
+            <button
+              key={i}
+              onClick={() => setTab(i)}
+              className={`px-5 py-3 text-sm font-semibold transition-all relative ${
+                tab === i ? 'text-orange-500' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {label}
+              {tab === i && (
+                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    try {
-        var isAdmin = localStorage.getItem('account') == 'admin' ? true : false;
-    } catch (error) {
+        {tab === 0 && (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <SectionTitle subtitle="Bài kiểm tra an toàn giao thông">Đề Thi</SectionTitle>
+              {isAdmin && (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowForm(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+                >
+                  <Plus className="w-4 h-4" /> Thêm bài thi
+                </motion.button>
+              )}
+            </div>
 
-    }
-    const open = Boolean(anchorEl);
-    useEffect(() => {
-        Api.getListExams().then(res => {
-            setListExams(res.data)
-            setLoaded(true)
-        })
-    }, [])
-
-    const [anchorEl1, setAnchorEl1] = useState(Array.from({ length: listExams.length }, () => null)); // Khởi tạo mảng anchorEl1
-
-
-    const handleClick1 = (event, index) => {
-        const newAnchorEl1 = [...anchorEl1]; // Sao chép mảng anchorEl1
-        newAnchorEl1[index] = event.currentTarget; // Cập nhật phần tử tương ứng với index
-        setAnchorEl1(newAnchorEl1); // Cập nhật mảng anchorEl1
-    };
-
-    const handleClose1 = () => {
-        setAnchorEl1(Array.from({ length: listExams.length }, () => null)); // Đặt lại tất cả các phần tử trong mảng anchorEl1 là null
-    };
-
-    const open1 = Boolean(anchorEl1);
-    // const myPdf = '../../public/';
-    return (
-        <div style={{ minHeight: '800px' }}>
-            <Grid container justifyContent='center' width='100%'>
-                <div style={{ display: `${loaded ? 'none' : 'fixed'}` }} className="loader_container">
-                    <div className="loader_" ></div>
+            {/* Form Modal */}
+            {showForm && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
+                <div className="absolute inset-0 backdrop-blur-sm" style={{ backgroundColor: 'rgba(26,43,74,0.5)' }} />
+                <div className="relative z-10 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+                  <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 z-20">
+                    <X className="w-4 h-4" />
+                  </button>
+                  <AddExam handleClose={() => setShowForm(false)} />
                 </div>
-                <Grid item container xs={11} md={10}>
-                    <Tabs variant={xs ? 'fullWidth' : 'standard'}
-                        value={value} onChange={handleChange} style={{ padding: '5px 5px', width: '100%' }}>
-                        <Tab label="Trắc nghiệm" {...a11yProps(0)} />
-                        <Tab label="File đề thi" {...a11yProps(1)} />
-                    </Tabs>
-                    <CustomTabPanel value={value} index={0}>
-                        <Grid item xs={12} container >
-                            {isAdmin &&
-                                <Grid item xs={12} container paddingTop='20px'>
-                                    <Button onClick={handleClick} variant="contained"><AddIcon />Thêm bài thi</Button>
-                                </Grid>
-                            }
-                            <Popover
-                                anchorReference="anchorPosition"
-                                anchorPosition={{ top: 300, left: 800 }}
-                                open={open}
-                                anchorEl={anchorEl}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'center',
-                                }}
-                                style={{ width: '0px', height: '0px' }}
-                            >
-                                <AddExam handleClose={handleClose} />
-                            </Popover>
-                            {listExams.map((item, index) => (
-                                <Grid key={index} margin='10px 15px' marginLeft='0px' item container padding='10px' xs={12} md={5.5} minHeight='200px' borderRadius='5px' bgcolor='#fff' border='1px solid #ccc'>
-                                    <Grid item xs={12} container justifyContent='center'>
-                                        <Typography variant="h5" textAlign='center' style={{ color: 'red', padding: '0px 5px' }}>{item.name}</Typography>
-                                    </Grid>
-                                    <Grid item container xs={12} justifyContent='center'>
-                                        <p>Thời gian: <span>{item.time} </span> phút</p>
-                                    </Grid>
-                                    <Grid item xs={12} container justifyContent='center'>
-                                        <Typography variant="h6"> <span style={{ color: 'blue' }}></span></Typography>
-                                    </Grid>
-                                    <Grid container item xs={12} justifyContent='center'>
-                                        <Link href={`/exams/${item.id}`}>
-                                            <Button style={{ padding: '5px 20px', textTransform: 'none', marginRight: '10px' }} variant="contained"> Làm bài thi</Button>
-                                        </Link>
-                                        <Link href={`/exams/`}>
-                                            <Button color="success" style={{ padding: '5px 10px', textTransform: 'none' }} onClick={(event) => handleClick1(event, index)} variant="contained">Xếp hạng</Button>
-                                        </Link>
-                                    </Grid>
-                                    <Popover
-                                        anchorReference="anchorPosition"
-                                        anchorPosition={{ top: 300, left: 400 }}
-                                        open={Boolean(anchorEl1[index])}
-                                        anchorEl={anchorEl1[index]}
-                                        onClose={handleClose1}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'center',
-                                        }}
-                                        style={{ width: '0px', height: '0px' }}
-                                    >
-                                        <Rank id={item?.id} />
-                                    </Popover>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={1} >
-                        <h1 style={{ fontSize: '30px' }}>
-                            Tài liệu về giáo dục sức khỏe sinh sản
-                        </h1>
-                        <div>Câu hỏi tìm hiểu về sức khỏe sinh sản &nbsp;&nbsp;
-                            <a href='https://docs.google.com/document/d/1GuP1m6OdlHwW4CmkRXBQUqb_LhwnLYT2/edit?usp=sharing&ouid=100393540981120231320&rtpof=true&sd=true'>Tại đây</a>
-                        </div>
-                        <div>Đáp án tìm hiểu về sức khỏe sinh sản &nbsp;&nbsp;
-                            <a href='https://docs.google.com/document/d/1lTMy3M9YwvJwtC11nquDaqBDl7rjEgCP/edit?usp=sharing&ouid=100393540981120231320&rtpof=true&sd=true'>Tại đây</a>
-                        </div>
-                    </CustomTabPanel>
-                </Grid>
-            </Grid>
-        </div>
-    );
-}
+              </div>
+            )}
 
-export default Exams;
+            {/* Rank Modal */}
+            {rankExam && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setRankExam(null)}>
+                <div className="absolute inset-0 backdrop-blur-sm" style={{ backgroundColor: 'rgba(26,43,74,0.5)' }} />
+                <div className="relative z-10 w-full max-w-lg bg-white rounded-2xl p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2"><Trophy className="w-5 h-5 text-amber-500" /> Bảng xếp hạng</h3>
+                    <button onClick={() => setRankExam(null)} className="p-1 rounded-lg hover:bg-slate-100"><X className="w-4 h-4" /></button>
+                  </div>
+                  <Rank id={rankExam} />
+                </div>
+              </div>
+            )}
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate={loaded ? 'show' : 'hidden'}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+            >
+              {listExams.map((item) => (
+                <motion.div key={item.id} variants={itemVariants}>
+                  <Card className="flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2 rounded-xl bg-orange-50">
+                        <ClipboardList className="w-5 h-5 text-orange-500" />
+                      </div>
+                      <Badge color={getDifficultyColor(item.time)}>
+                        {getDifficultyLabel(item.time)}
+                      </Badge>
+                    </div>
+                    <h3 className="font-bold text-slate-800 text-base mb-2 flex-1">{item.name}</h3>
+                    <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
+                      <Clock className="w-4 h-4" />
+                      <span>{item.time} phút</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link href={`/exams/${item.id}`} className="flex-1">
+                        <motion.button
+                          whileTap={{ scale: 0.97 }}
+                          className="w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+                        >
+                          Làm bài thi
+                        </motion.button>
+                      </Link>
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setRankExam(item.id)}
+                        className="py-2.5 px-4 rounded-xl border-2 border-green-500 text-green-600 hover:bg-green-50 font-semibold text-sm transition-all flex items-center gap-1"
+                      >
+                        <Trophy className="w-4 h-4" /> Xếp hạng
+                      </motion.button>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+              {loaded && listExams.length === 0 && (
+                <div className="col-span-2 text-center py-16 text-slate-400">
+                  <p>Chưa có đề thi nào.</p>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+
+        {tab === 1 && (
+          <div className="text-center py-20 text-slate-400">
+            <Trophy className="w-14 h-14 mx-auto mb-4 text-amber-300" />
+            <p className="text-lg font-medium text-slate-600 mb-2">Kết quả của bạn</p>
+            <p className="text-sm">Tham gia bài thi để xem kết quả ở đây.</p>
+            <Link href="/exams" onClick={() => setTab(0)}>
+              <button className="mt-6 px-6 py-2.5 rounded-xl bg-orange-500 text-white font-semibold text-sm hover:bg-orange-600 transition-all">
+                Xem đề thi
+              </button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </PageWrapper>
+  );
+}

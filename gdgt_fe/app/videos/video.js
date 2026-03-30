@@ -1,36 +1,35 @@
-import { Avatar, Grid } from "@mui/material";
-import Link from "next/link";
-import styles from './video.module.css'
+import Link from 'next/link';
+import { Play, User } from 'lucide-react';
 
-function Video({ id, title, avatar, youtubeId }) {
-    return (
-        <Grid container item xs={12} sm={6} md={4} minHeight='200px' maxHeight='350px'>
-            <Grid container item margin='10px' overflow='hidden'>
-                <div style={{ width: '100%', paddingBottom: '75%', position: 'relative', maxHeight: '250px' }}>
-                    <Link href={`videos/detail/${id}`}>
-                        <img
-                            src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
-                            alt="Sample"
-                            className={styles.img_video}
-                        />
-                    </Link>
-                </div>
-                <div style={{ display: 'flex', padding: '10px', width: '100%' }}>
-                    <Grid item xs={1.6} md={1.5} >
-                        <Avatar style={{ width: '36px', height: '36px', cursor: 'pointer' }} src={avatar}></Avatar>
-                    </Grid>
-                    <Grid item xs={10} md={10.5} style={{ flex: '1', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', lineHeight: '1.6rem', maxHeight: '3.2rem', overflow: 'hidden', }}>
-                        <Link href={`videos/detail/${id}`}>
-                            <p style={{ fontSize: '16px', textAlign: 'start', fontWeight: '600', paddingLeft: '10px', color: '#333' }}>
-                                {title}
-                            </p>
-                        </Link>
-                    </Grid>
-                </div>
-
-            </Grid>
-        </Grid>
-    );
+export default function Video({ id, title, avatar, youtubeId }) {
+  return (
+    <Link href={`videos/detail/${id}`}>
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition-all group cursor-pointer">
+        <div className="relative aspect-video bg-slate-200">
+          <img
+            src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center shadow">
+              <Play className="w-4 h-4 text-white ml-0.5" />
+            </div>
+          </div>
+        </div>
+        <div className="p-3 flex gap-2 items-start">
+          {avatar ? (
+            <img src={avatar} alt="" className="w-7 h-7 rounded-full flex-shrink-0 object-cover" />
+          ) : (
+            <div className="w-7 h-7 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center">
+              <User className="w-3.5 h-3.5 text-orange-500" />
+            </div>
+          )}
+          <p className="text-sm font-semibold text-slate-700 line-clamp-2 group-hover:text-orange-500 transition-colors leading-snug">
+            {title}
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
 }
-
-export default Video;

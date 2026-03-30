@@ -43,10 +43,12 @@ public class DataInitializer implements ApplicationRunner {
     }
 
     private void seedAdminUser() {
-        if (userRepository.findByUserId("admin") == null) {
-            Role adminRole = roleRepository.findByRoleId(1);
+        Role adminRole = roleRepository.findByRoleId(1);
+        Role userRole  = roleRepository.findByRoleId(2);
 
-            User admin = new User();
+        User admin = userRepository.findByUserId("admin");
+        if (admin == null) {
+            admin = new User();
             admin.setId("admin");
             admin.setName("Admin");
             admin.setAccount("admin");
@@ -54,12 +56,14 @@ public class DataInitializer implements ApplicationRunner {
             admin.setEnable(true);
             admin.setHasProvider(false);
             admin.setType(1);
-
-            List<Role> roles = new ArrayList<>();
-            roles.add(adminRole);
-            admin.setRoles(roles);
-
-            userRepository.save(admin);
         }
+
+        // Ensure admin always has both ROLE_ADMIN and ROLE_USER
+        List<Role> roles = new ArrayList<>();
+        if (adminRole != null) roles.add(adminRole);
+        if (userRole  != null) roles.add(userRole);
+        admin.setRoles(roles);
+
+        userRepository.save(admin);
     }
 }

@@ -1,107 +1,109 @@
-'use client'
-import { Avatar, Grid, Typography } from '@mui/material';
+'use client';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, User } from 'lucide-react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
-import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
-import Other from './otherVideo';
-import { useEffect, useRef, useState } from 'react';
+import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import PageWrapper from '@/components/ui/PageWrapper';
 import Api from '../../../api/api';
-import './stylevideo.css'
-function DetailVideo({ params }) {
-    console.log(params.id)
-    const [video, setVideo] = useState({})
-    const [otherVideos, setOtherVideos] = useState([])
-    const [loaded, setLoaded] = useState(false)
-    useEffect(() => {
-        Api.getVideoById(params.id).then(
-            res => {
-                setVideo(res?.data)
-                setLoaded(true)
-            }
-        )
-    }, [])
-    // Thêm một ref cho iframe để có thể truy cập vào nó từ JavaScript
-    const iframeRef = useRef(null);
 
-    // Khi component được render, sử dụng useEffect để thực hiện ẩn tiêu đề và các phần tử khác bên trong iframe
-    useEffect(() => {
-        // Lấy tham chiếu đến iframe
-        const iframe = iframeRef.current;
-
-        // Kiểm tra xem iframe có tồn tại không
-        if (iframe) {
-            // Lấy document bên trong iframe
-            const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-            // Tìm và ẩn tiêu đề và các phần tử khác bên trong iframe
-            const titleElement = iframeDocument.querySelector('.ytp-title'); // Thay '.title-class' bằng class của tiêu đề
-            console.log('see')
-            if (titleElement) {
-                titleElement.style.display = 'none !important';
-            }
-
-            // Tiếp tục tìm và ẩn các phần tử khác nếu cần
-        }
-    }, []);
-    useEffect(() => {
-        Api.getAllVideo().then(
-            res => {
-                if (res.data.length > 5) {
-                    console.log(res.data)
-                    var list = res.data.slice(0, 5)
-                    setOtherVideos(list)
-                } else {
-                    setOtherVideos(res.data)
-                }
-
-            }
-        )
-    }, [])
-
-    return (
-        <div style={{ padding: '20px 0px', justifyContent: 'center', display: 'flex' }}>
-            <Grid container item style={{ width: '95%' }}>
-                <div style={{ display: `${loaded ? 'none' : 'fixed'}` }} className="loader_container">
-                    <div className="loader_" ></div>
-                </div>
-                <Grid item container xs={12} md={9} justifyContent='flex-start' margin='0px 0px 30px 0px' paddingRight='10px'>
-                    <Grid item xs={12} borderRadius='10px' overflow='hidden'>
-                        <LiteYouTubeEmbed
-                            id={video?.youtubeId}
-                            title=""
-                            playerClass="lty-playbtn" // Default as "lty-playbtn" to control player button styles
-                            wrapperClass="yt-lite"
-                            defaultPlay={true}
-                            playlist={false}
-                            params={{ autoplay: 1, modestbranding: 1 }}
-                        />
-                    </Grid>
-                    <Grid item container xs={12} justifyContent='space-around'>
-                        <Grid item xs={12} style={{ textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '2', WebkitBoxOrient: 'vertical', lineHeight: '1.6rem', maxHeight: '3.2rem', overflow: 'hidden' }} >
-                            <Typography fontWeight={600}>{video?.title}</Typography>
-                        </Grid>
-                        <Grid item container >
-                            <Grid item container overflow='hidden' xs={7} alignItems='center' margin='10px 0px'>
-                                <Avatar src={video.owner?.avatar} style={{ border: '1px solid #333', boxShadow: '0px 0px 3px 0px' }} />
-                                <Typography variant='h7' fontWeight={600} style={{ paddingLeft: '15px', fontStyle: 'italic' }}>{video.owner?.name}</Typography>
-                            </Grid>
-                            <Grid item container xs={5} alignItems='center'>
-
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item container style={{ display: 'block' }} xs={12} md={3} height='100%' zIndex='10' overflow='hidden' borderRadius='10px' >
-                    {otherVideos.map((item, index) => (
-                        <Other key={index} name={item?.owner.name} avatar={item?.owner.avatar} id={item?.id} title={item?.title} youtubeId={item?.youtubeId} />
-                    ))}
-                </Grid>
-
-            </Grid>
-
+function OtherVideoCard({ id, title, youtubeId, name, avatar }) {
+  return (
+    <Link href={`/videos/detail/${id}`}>
+      <motion.div
+        whileHover={{ x: 2 }}
+        className="flex gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"
+      >
+        <div className="relative w-28 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-slate-200">
+          <img src={`https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`} alt={title} className="w-full h-full object-cover" />
         </div>
-    );
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-700 line-clamp-2 leading-snug mb-1">{title}</p>
+          <p className="text-xs text-slate-400 flex items-center gap-1">
+            {avatar ? <img src={avatar} alt="" className="w-4 h-4 rounded-full" /> : <User className="w-3 h-3" />}
+            {name}
+          </p>
+        </div>
+      </motion.div>
+    </Link>
+  );
 }
 
-export default DetailVideo;
+export default function DetailVideo({ params }) {
+  const [video, setVideo] = useState({});
+  const [otherVideos, setOtherVideos] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    Api.getVideoById(params.id).then((res) => {
+      setVideo(res?.data);
+      setLoaded(true);
+    });
+    Api.getAllVideo().then((res) => {
+      setOtherVideos(res.data?.slice(0, 6) || []);
+    });
+  }, []);
+
+  return (
+    <PageWrapper>
+      {!loaded && <div className="loader_container"><div className="loader_spinner" /></div>}
+
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <Link href="/videos" className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-500 text-sm mb-5 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Quay lại video
+        </Link>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Main video */}
+          <div className="flex-1 min-w-0">
+            <div className="rounded-2xl overflow-hidden shadow-lg mb-4">
+              {video?.youtubeId && (
+                <LiteYouTubeEmbed
+                  id={video.youtubeId}
+                  title={video.title || 'Video an toàn giao thông'}
+                  defaultPlay
+                  params={{ autoplay: 1, modestbranding: 1 }}
+                />
+              )}
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+              <h1 className="text-lg font-bold text-slate-800 mb-3 leading-snug">{video?.title}</h1>
+              {video?.owner && (
+                <div className="flex items-center gap-3">
+                  {video.owner.avatar ? (
+                    <img src={video.owner.avatar} alt={video.owner.name} className="w-9 h-9 rounded-full border-2 border-orange-200 object-cover" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center">
+                      <User className="w-4 h-4 text-orange-500" />
+                    </div>
+                  )}
+                  <span className="font-semibold text-slate-700 text-sm italic">{video.owner.name}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:w-72 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+              <h3 className="font-bold text-slate-700 text-sm mb-3 px-1">Video khác</h3>
+              <div className="space-y-1">
+                {otherVideos.map((item) => (
+                  <OtherVideoCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    youtubeId={item.youtubeId}
+                    name={item.owner?.name}
+                    avatar={item.owner?.avatar}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageWrapper>
+  );
+}

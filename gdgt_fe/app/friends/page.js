@@ -1,23 +1,40 @@
-import { Avatar, Grid, Typography } from "@mui/material";
+import PageWrapper from '@/components/ui/PageWrapper';
+import SectionTitle from '@/components/ui/SectionTitle';
 
-function Friend() {
-    const listFriends = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    return (
-        <div style={{ minHeight: '400px', display: 'flex', justifyContent: 'center', backgroundColor: '#fff', padding: '40px 0px' }}>
-            <Grid container item xs={10} >
-                {listFriends.map((item, index) => (
-                    <Grid key={index} item container xs={12} sm={5.5} style={{ margin: '4px 5px ', height: '110px' }} border='1px solid #ebe6e6' borderRadius='10px'>
-                        <Grid item container alignItems='center' xs={4} justifyContent='center'>
-                            <Avatar style={{ height: '90px', width: '90px', maxWidth: '100%' }} src="https://minhtuanmobile.com/uploads/blog/honkai-star-rail-an-dinh-ngay-ra-mat-cua-jingliu-khien-game-thu-dung-ngoi-khong-yen-230815010127.jpg"></Avatar>
-                        </Grid>
-                        <Grid item container xs={8} alignItems='center'>
-                            <Typography variant="h5">{'Jingliu'}</Typography>
-                        </Grid>
-                    </Grid>
-                ))}
-            </Grid>
+const MOCK_FRIENDS = [
+  { name: 'Bạn bè 1', avatar: 'https://i.pravatar.cc/150?img=1' },
+  { name: 'Bạn bè 2', avatar: 'https://i.pravatar.cc/150?img=2' },
+  { name: 'Bạn bè 3', avatar: 'https://i.pravatar.cc/150?img=3' },
+  { name: 'Bạn bè 4', avatar: 'https://i.pravatar.cc/150?img=4' },
+  { name: 'Bạn bè 5', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { name: 'Bạn bè 6', avatar: 'https://i.pravatar.cc/150?img=6' },
+];
+
+export default function Friend() {
+  return (
+    <PageWrapper>
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <SectionTitle subtitle="Danh sách bạn bè">Bạn Bè</SectionTitle>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {MOCK_FRIENDS.map((friend, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all"
+            >
+              <img
+                src={friend.avatar}
+                alt={friend.name}
+                className="w-16 h-16 rounded-full object-cover border-2 border-orange-100"
+              />
+              <div>
+                <p className="font-semibold text-slate-700">{friend.name}</p>
+                <p className="text-xs text-slate-400">Thành viên</p>
+              </div>
+            </div>
+          ))}
         </div>
-    );
+      </div>
+    </PageWrapper>
+  );
 }
-
-export default Friend;

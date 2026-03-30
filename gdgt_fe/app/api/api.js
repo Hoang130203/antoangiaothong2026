@@ -1,149 +1,195 @@
 import axios from "axios";
 
-const base_url = 'https://gdgt.maiminhhoang.id.vn'
-// const base_url = 'http://localhost:8087'
-// const base_url = 'https://atgt-backend.onrender.com'
-// const base_url = 'https://gdgt-project.onrender.com'
-// const base_url = 'https://colt-easy-kindly.ngrok-free.app'
+const base_url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8086';
 
-let headers = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        "ngrok-skip-browser-warning": "69420",
+// ─── Read credentials FRESH on every call ───────────────────────────────────
+// Never cache at module level: module loads before localStorage is populated,
+// and a cached invalid "Authorization: Basic null:null" header causes Spring
+// Security to reject even permitAll() endpoints with 401.
+const getCreds = () => {
+    try {
+        return {
+            user: localStorage.getItem('info'),
+            username: localStorage.getItem('account'),
+            password: localStorage.getItem('password'),
+        };
+    } catch {
+        return { user: null, username: null, password: null };
+    }
+};
 
-    },
-    "Access-Control-Allow-Origin": "*", // CORS
+// Plain headers – no Authorization (for public endpoints or unauthenticated users)
+const plainConfig = () => ({
+    headers: { 'Content-Type': 'application/json' },
+});
 
-}
-try {
-    var user = localStorage.getItem('info')
-    var username = localStorage.getItem('account')
-    var password = localStorage.getItem('password')
-} catch (error) {
-    console.log(error)
-}
-let headersauth = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa(`${username}:${password}`)}`,
-        "ngrok-skip-browser-warning": "69420",
-
-        // 'Authorization': `Basic ${btoa('vM94gZtgEB:h27KSuVMmj')}`
-
-    },
-    "Access-Control-Allow-Origin": "*", // CORS
-
-
-}
+// Auth headers – only included when valid credentials exist in localStorage
+const authConfig = () => {
+    const { username, password } = getCreds();
+    if (username && password && username !== 'null' && password !== 'null') {
+        return {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+            },
+        };
+    }
+    // Fall back to plain (no auth header) — avoids 401 on permitAll() endpoints
+    return plainConfig();
+};
 
 class Api {
-    // PostImage(img) {
-
-    //     const data = new FormData();
-    //     data.append('file', img);
-    //     data.append('upload_preset', 'ey8cuam4');
-    //     data.append('cloud_name', 'dqwouu351');
-    //     data.append('folder', 'Home');
-    //     return axios.post('https://api.cloudinary.com/v1_1/dqwouu351/image/upload', data);
-    // }
+    // ─── Upload ─────────────────────────────────────────────────────────────
     PostImage(img) {
-
+        const { username, password } = getCreds();
+        const authHeader = (username && password && username !== 'null')
+            ? { Authorization: `Basic ${btoa(`${username}:${password}`)}` }
+            : {};
         const data = new FormData();
         data.append('file', img);
-        data.append('upload_preset', 'xosulpvx');
-        data.append('cloud_name', 'dxmczmcpn');
-        data.append('folder', 'Home');
-        return axios.post('https://api.cloudinary.com/v1_1/dxmczmcpn/image/upload', data);
+        return axios.post(`${base_url}/api/upload`, data, {
+            headers: { 'Content-Type': 'multipart/form-data', ...authHeader },
+        });
     }
 
+    // ─── Auth ────────────────────────────────────────────────────────────────
     async login(account, password, provider) {
-        return await axios.post(`${base_url}/api/users/login?account=${account}&password=${password}&hasprovider=${provider}`, headers);
-
+        return await axios.post(
+            `${base_url}/api/users/login?account=${account}&password=${password}&hasprovider=${provider}`,
+            {},
+            plainConfig()
+        );
     }
+
     async register(account, password, name) {
         return await axios.post(`${base_url}/api/users/signup`, {
-            "name": name,
-            "account": account,
-            "password": password
-        }, headers);
+            name,
+            account,
+            password,
+        }, plainConfig());
     }
+
+    // ─── Posts ───────────────────────────────────────────────────────────────
     async upPost(title, content, image) {
-        console.log(headersauth)
-        return await axios.post(`${base_url}/api/users/uppost?ownerId=${user}`, {
-            title,
-            content,
-            image
-        }, headersauth);
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/users/uppost?ownerId=${user}`,
+            { title, content, image },
+            authConfig()
+        );
     }
 
     async getPost() {
-        return await axios.get(`${base_url}/api/users/allpost`, headersauth);
+        return await axios.get(`${base_url}/api/users/allpost`, plainConfig());
     }
 
     async getPostById(id) {
-        return await axios.get(`${base_url}/api/posts/${id}?userId=${user}`, headers);
-    }
-
-    async postVideo(title, idVideo) {
-        return await axios.post(`${base_url}/api/videos/postVideo?userId=${user}`, { "title": title, "youtubeId": idVideo }, headersauth);
-    }
-
-    async getAllVideo() {
-        return await axios.get(`${base_url}/api/videos/getAllVideo`, headers);
-    }
-    async getVideoById(id) {
-        return await axios.get(`${base_url}/api/videos/getVideoById/${id}`, headers);
-    }
-
-    async insertImage(url, ownerId) {
-        console.log(username)
-        return await axios.post(`${base_url}/api/videos/postImage?url=${url}&ownerId=${ownerId}`, { 'url': url }, headersauth);
-    }
-
-    async getImages() {
-        return await axios.get(`${base_url}/api/videos/getAllImages`, headers);
-    }
-
-    async postExam(name, time, maxTimes, questions) {
-        return await axios.post(`${base_url}/api/exams/postExamAndQuestions?ownerId=${user}`, { name, time, maxTimes, questions }, headersauth);
-    }
-
-    async getListExams() {
-        return await axios.get(`${base_url}/api/exams/getListExams`, headersauth);
-    }
-
-    async getExamById(id) {
-        return await axios.get(`${base_url}/api/exams/getExamById?id=${id}`, headersauth);
+        const { user } = getCreds();
+        return await axios.get(`${base_url}/api/posts/${id}?userId=${user}`, plainConfig());
     }
 
     async postReact(postId, react) {
-        return await axios.post(`${base_url}/api/posts/react?postId=${postId}&userId=${user}&react=${react}`, {}, headersauth);
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/posts/react?postId=${postId}&userId=${user}&react=${react}`,
+            {},
+            authConfig()
+        );
     }
 
     async postComment(postid, content) {
-        return await axios.post(`${base_url}/api/posts/comment?postId=${postid}&userId=${user}&content=${content}`, {}, headersauth);
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/posts/comment?postId=${postid}&userId=${user}&content=${content}`,
+            {},
+            authConfig()
+        );
     }
 
-    async getInfo() {
-        return await axios.get(`${base_url}/api/users/info?userId=${user}`, headersauth);
+    // ─── Videos ──────────────────────────────────────────────────────────────
+    async postVideo(title, idVideo) {
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/videos/postVideo?userId=${user}`,
+            { title, youtubeId: idVideo },
+            authConfig()
+        );
     }
 
-    async updateInfo(email, password, name, school, avatar, gender, ofClass) {
-        return await axios.put(`${base_url}/api/users/info?userId=${user}`, { id: user, email, password, name, school, avatar, gender, ofClass }, headersauth);
+    async getAllVideo() {
+        return await axios.get(`${base_url}/api/videos/getAllVideo`, plainConfig());
     }
 
-    async updateAvatar(avatar) {
-        return await axios.put(`${base_url}/api/users/avatar?userId=${user}&avatar=${avatar}`, {}, headersauth);
+    async getVideoById(id) {
+        return await axios.get(`${base_url}/api/videos/getVideoById/${id}`, plainConfig());
+    }
+
+    // ─── Images ──────────────────────────────────────────────────────────────
+    async insertImage(url, ownerId) {
+        return await axios.post(
+            `${base_url}/api/videos/postImage?url=${url}&ownerId=${ownerId}`,
+            { url },
+            authConfig()
+        );
+    }
+
+    async getImages() {
+        return await axios.get(`${base_url}/api/videos/getAllImages`, plainConfig());
+    }
+
+    // ─── Exams ───────────────────────────────────────────────────────────────
+    async postExam(name, time, maxTimes, questions) {
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/exams/postExamAndQuestions?ownerId=${user}`,
+            { name, time, maxTimes, questions },
+            authConfig()
+        );
+    }
+
+    async getListExams() {
+        return await axios.get(`${base_url}/api/exams/getListExams`, authConfig());
+    }
+
+    async getExamById(id) {
+        return await axios.get(`${base_url}/api/exams/getExamById?id=${id}`, authConfig());
     }
 
     async postResult(examId, numberCorrect, time, totalQuestion) {
-        return await axios.post(`${base_url}/api/exams/result`, { resultId: { examId, userId: user }, numberCorrect, time, totalQuestion }, headersauth);
+        const { user } = getCreds();
+        return await axios.post(
+            `${base_url}/api/exams/result`,
+            { resultId: { examId, userId: user }, numberCorrect, time, totalQuestion },
+            authConfig()
+        );
     }
 
     async getRank(examId) {
-        return await axios.get(`${base_url}/api/exams/rank?examId=${examId}`, headersauth);
+        return await axios.get(`${base_url}/api/exams/rank?examId=${examId}`, authConfig());
+    }
+
+    // ─── User info ───────────────────────────────────────────────────────────
+    async getInfo() {
+        const { user } = getCreds();
+        return await axios.get(`${base_url}/api/users/info?userId=${user}`, authConfig());
+    }
+
+    async updateInfo(email, password, name, school, avatar, gender, ofClass) {
+        const { user } = getCreds();
+        return await axios.put(
+            `${base_url}/api/users/info?userId=${user}`,
+            { id: user, email, password, name, school, avatar, gender, ofClass },
+            authConfig()
+        );
+    }
+
+    async updateAvatar(avatar) {
+        const { user } = getCreds();
+        return await axios.put(
+            `${base_url}/api/users/avatar?userId=${user}&avatar=${avatar}`,
+            {},
+            authConfig()
+        );
     }
 }
 
