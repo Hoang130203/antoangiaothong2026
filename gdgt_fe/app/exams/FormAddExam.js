@@ -2,15 +2,28 @@
 import * as XLSX from 'xlsx';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet, Plus } from 'lucide-react';
+import { FileSpreadsheet, Plus, Download } from 'lucide-react';
 import Api from '../api/api';
 
-export default function AddExam({ handleClose }) {
+export default function AddExam({ handleClose, onSuccess }) {
   const [name, setName] = useState('');
   const [max, setMax] = useState('');
   const [time, setTime] = useState('');
   const [data, setData] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
+
+  const downloadTemplate = () => {
+    const ws = XLSX.utils.aoa_to_sheet([
+      ['Câu hỏi', 'Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D', 'Đáp án đúng'],
+      ['(Hướng dẫn: điền câu hỏi, 4 đáp án, cột cuối là A/B/C/D)', '', '', '', '', ''],
+      ['Khi đi bộ sang đường, bạn nên làm gì?', 'Nhìn trái rồi phải rồi mới đi', 'Chạy thật nhanh qua đường', 'Đi thẳng không cần nhìn', 'Đứng giữa đường chờ xe', 'A'],
+      ['Tốc độ tối đa trong khu dân cư là bao nhiêu?', '30 km/h', '40 km/h', '50 km/h', '60 km/h', 'C'],
+    ]);
+    ws['!cols'] = [{ wch: 40 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 15 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'DeThi');
+    XLSX.writeFile(wb, 'template_de_thi.xlsx');
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,12 +47,11 @@ export default function AddExam({ handleClose }) {
     }
     try {
       const res = await Api.postExam(name, parseInt(time), parseInt(max), exam);
-      if (res.status === 200) {
-        alert('Thêm thành công');
-        handleClose();
-      }
+      const newExam = res?.data || { id: Date.now(), name, time: parseInt(time), maxTimes: parseInt(max) };
+      if (onSuccess) onSuccess(newExam);
+      handleClose();
     } catch {
-      alert('Thêm thất bại');
+      if (onSuccess) onSuccess(null);
     } finally {
       setIsDisabled(false);
     }
@@ -47,7 +59,16 @@ export default function AddExam({ handleClose }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6">
-      <h3 className="font-bold text-slate-800 text-lg mb-5">Thêm bài thi mới</h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-bold text-slate-800 text-lg">Thêm bài thi mới</h3>
+        <button
+          type="button"
+          onClick={downloadTemplate}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-medium transition-all"
+        >
+          <Download className="w-3.5 h-3.5" /> Tải file mẫu
+        </button>
+      </div>
 
       <div className="space-y-3 mb-4">
         <div>

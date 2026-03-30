@@ -6,6 +6,7 @@ import { Clock, User, Plus, X } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
+import Toast from '@/components/ui/Toast';
 import Api from '../api/api';
 import FormPost from './FormCreatePost';
 
@@ -24,6 +25,7 @@ export default function Posts() {
   const [showForm, setShowForm] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [user, setUser] = useState(null);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     try {
@@ -90,7 +92,17 @@ export default function Posts() {
               <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 hover:text-slate-700 z-20">
                 <X className="w-4 h-4" />
               </button>
-              <FormPost handleClick={() => setShowForm(false)} />
+              <FormPost
+                handleClick={() => setShowForm(false)}
+                onSuccess={(newPost) => {
+                  if (newPost) {
+                    setListPost((prev) => [newPost, ...prev]);
+                    setToast({ message: 'Đăng bài thành công!', type: 'success' });
+                  } else {
+                    setToast({ message: 'Đăng bài thất bại, thử lại!', type: 'error' });
+                  }
+                }}
+              />
             </div>
           </div>
         )}
@@ -141,6 +153,7 @@ export default function Posts() {
           )}
         </motion.div>
       </div>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </PageWrapper>
   );
 }

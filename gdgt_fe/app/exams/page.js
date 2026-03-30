@@ -7,6 +7,7 @@ import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Toast from '@/components/ui/Toast';
 import Api from '../api/api';
 import AddExam from './FormAddExam';
 import Rank from './rank';
@@ -38,6 +39,7 @@ export default function Exams() {
   const [showForm, setShowForm] = useState(false);
   const [rankExam, setRankExam] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     try { setIsAdmin(localStorage.getItem('account') === 'admin'); } catch {}
@@ -97,7 +99,17 @@ export default function Exams() {
                   <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 z-20">
                     <X className="w-4 h-4" />
                   </button>
-                  <AddExam handleClose={() => setShowForm(false)} />
+                  <AddExam
+                    handleClose={() => setShowForm(false)}
+                    onSuccess={(newExam) => {
+                      if (newExam) {
+                        setListExams((prev) => [...prev, newExam]);
+                        setToast({ message: 'Thêm bài thi thành công!', type: 'success' });
+                      } else {
+                        setToast({ message: 'Thêm bài thi thất bại, thử lại!', type: 'error' });
+                      }
+                    }}
+                  />
                 </div>
               </div>
             )}
@@ -180,6 +192,7 @@ export default function Exams() {
           </div>
         )}
       </div>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </PageWrapper>
   );
 }

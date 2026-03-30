@@ -4,7 +4,7 @@ import { X, Video as Youtube, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Api from '../api/api';
 
-export default function FormVideo({ handleClick }) {
+export default function FormVideo({ handleClick, onSuccess }) {
   const [idVideo, setIdVideo] = useState('');
   const [title, setTitle] = useState('');
   const [loaded, setLoaded] = useState(true);
@@ -22,14 +22,11 @@ export default function FormVideo({ handleClick }) {
     try {
       const youtubeId = idVideo.replace('https://www.youtube.com/watch?v=', '').split('&')[0];
       const res = await Api.postVideo(title, youtubeId);
-      if (res.status === 200) {
-        alert('Đăng video thành công');
-        handleClick();
-      } else {
-        alert('Đăng video thất bại');
-      }
+      const newVideo = res?.data || { id: Date.now(), title, youtubeId, owner: { name } };
+      if (onSuccess) onSuccess(newVideo);
+      handleClick();
     } catch {
-      alert('Đăng video thất bại');
+      if (onSuccess) onSuccess(null);
     } finally {
       setLoaded(true);
       setIsDisabled(false);

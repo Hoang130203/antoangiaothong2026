@@ -19,12 +19,14 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     try {
       setUser(localStorage.getItem('user'));
       setAvatar(localStorage.getItem('avatar'));
     } catch {}
+    setMounted(true);
 
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
@@ -79,7 +81,9 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-2">
-            {user ? (
+            {!mounted ? (
+              <div className="w-24 h-8 bg-white/10 rounded-lg animate-pulse" />
+            ) : user ? (
               <div className="flex items-center gap-3">
                 <Link href="/info" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
                   {avatar ? (
@@ -116,7 +120,7 @@ export default function Header() {
                   Đăng ký
                 </Link>
               </>
-            )}
+            ) }
           </div>
 
           {/* Mobile Hamburger */}

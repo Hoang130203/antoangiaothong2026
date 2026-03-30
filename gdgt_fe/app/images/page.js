@@ -4,20 +4,21 @@ import { motion } from 'framer-motion';
 import { ImagePlus } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
+import Toast from '@/components/ui/Toast';
 import Api from '../api/api';
 
 export default function Images() {
   const [file, setFile] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
   const [loaded, setLoaded] = useState(false);
-
-  let isAdmin, userId;
-  try {
-    isAdmin = typeof window !== 'undefined' ? localStorage.getItem('account') === 'admin' : false;
-    userId = typeof window !== 'undefined' ? localStorage.getItem('info') : null;
-  } catch {}
+  const [uploading, setUploading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
+    try {
+      setIsAdmin(localStorage.getItem('account') === 'admin');
+    } catch {}
     Api.getImages().then((res) => {
       setImageUrls(res.data);
       setLoaded(true);
@@ -26,12 +27,19 @@ export default function Images() {
 
   const handlePostImage = async () => {
     if (!file) return;
+    setUploading(true);
     try {
+      const userId = localStorage.getItem('info');
       const res = await Api.PostImage(file);
       await Api.insertImage(res.data.url, userId);
-      alert('Thêm ảnh thành công');
-      window.location.reload();
-    } catch { alert('Thêm ảnh thất bại'); }
+      setImageUrls((prev) => [...prev, { url: res.data.url }]);
+      setFile(null);
+      setToast({ message: 'Thêm ảnh thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Thêm ảnh thất bại, thử lại!', type: 'error' });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const containerVariants = {
@@ -61,10 +69,10 @@ export default function Images() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handlePostImage}
-                disabled={!file}
+                disabled={!file || uploading}
                 className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-all disabled:opacity-50"
               >
-                Thêm ảnh
+                {uploading ? 'Đang tải...' : 'Thêm ảnh'}
               </motion.button>
             </div>
           )}
@@ -92,6 +100,7 @@ export default function Images() {
           )}
         </motion.div>
       </div>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </PageWrapper>
   );
 }

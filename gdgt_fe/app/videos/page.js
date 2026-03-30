@@ -5,6 +5,7 @@ import { Plus, X, Play } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
+import Toast from '@/components/ui/Toast';
 import Api from '../api/api';
 import FormVideo from './FormVideo';
 import Link from 'next/link';
@@ -24,6 +25,7 @@ export default function Videos() {
   const [showForm, setShowForm] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     try {
@@ -68,7 +70,17 @@ export default function Videos() {
               <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 z-20">
                 <X className="w-4 h-4" />
               </button>
-              <FormVideo handleClick={() => setShowForm(false)} />
+              <FormVideo
+                handleClick={() => setShowForm(false)}
+                onSuccess={(newVideo) => {
+                  if (newVideo) {
+                    setListVideos((prev) => [newVideo, ...prev]);
+                    setToast({ message: 'Đăng video thành công!', type: 'success' });
+                  } else {
+                    setToast({ message: 'Đăng video thất bại, thử lại!', type: 'error' });
+                  }
+                }}
+              />
             </div>
           </div>
         )}
@@ -123,6 +135,7 @@ export default function Videos() {
           )}
         </motion.div>
       </div>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </PageWrapper>
   );
 }

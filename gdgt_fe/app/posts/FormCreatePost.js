@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import EmojiPicker from 'emoji-picker-react';
 import Api from '../api/api';
 
-export default function FormPost({ handleClick }) {
+export default function FormPost({ handleClick, onSuccess }) {
   const [inputStr, setInputStr] = useState('');
   const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
@@ -14,10 +14,11 @@ export default function FormPost({ handleClick }) {
   const [avt, setAvt] = useState('');
   const [file, setFile] = useState(null);
 
-  let user, avatar;
+  let user, avatar, userId;
   try {
     user = localStorage.getItem('user');
     avatar = localStorage.getItem('avatar');
+    userId = localStorage.getItem('info');
   } catch {}
 
   const onEmojiClick = (emojiData) => {
@@ -37,16 +38,26 @@ export default function FormPost({ handleClick }) {
   const handlePost = async () => {
     setIsDisabled(true);
     try {
+      let imageUrl = '';
       if (avt.length > 0) {
-        const res = await Api.PostImage(file);
-        await Api.upPost(title, inputStr, res.data.url);
-      } else {
-        await Api.upPost(title, inputStr, '');
+        const uploadRes = await Api.PostImage(file);
+        imageUrl = uploadRes.data.url;
       }
-      alert('Đăng bài thành công');
+      const res = await Api.upPost(title, inputStr, imageUrl);
+      // Optimistic: use server response if available, otherwise construct locally
+      const newPost = res?.data || {
+        id: Date.now(),
+        title,
+        content: inputStr,
+        image: imageUrl,
+        time: new Date().toISOString(),
+        user: { name: user },
+      };
+      if (onSuccess) onSuccess(newPost);
       handleClick();
     } catch {
-      alert('Đăng bài thất bại');
+      // signal failure to parent so it can show toast
+      if (onSuccess) onSuccess(null);
     } finally {
       setIsDisabled(false);
     }
