@@ -19,7 +19,7 @@ public class Exam {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "name",columnDefinition = "nvarchar(2000)")
+    @Column(name = "name", length = 2000)
     private String name;
 
     @Column(name = "time")
@@ -29,17 +29,17 @@ public class Exam {
     private int maxTimes;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "owner")
     private User owner;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinTable(name = "result",joinColumns = @JoinColumn(name = "exam_id"),
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "result",
+            joinColumns = @JoinColumn(name = "exam_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Collection<User> results;
 
-//    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "exam")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "exam", fetch = FetchType.LAZY)
     private Collection<Question> questions;
 }
