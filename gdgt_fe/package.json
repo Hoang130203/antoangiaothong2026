@@ -6,11 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.0",
     "@cloudinary/url-gen": "^1.19.0",
+    "@react-three/drei": "^9.121.4",
+    "@react-three/fiber": "^8.18.0",
+    "@react-three/postprocessing": "^2.16.3",
+    "@react-three/rapier": "^1.5.0",
+    "@react-three/xr": "^6.6.29",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20.11.20",
     "@types/react": "^18.2.58",
@@ -20,18 +27,24 @@
     "lucide-react": "^1.7.0",
     "next": "14.1.0",
     "next-auth": "^4.24.6",
+    "nipplejs": "^1.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-lite-youtube-embed": "^2.4.0",
     "react-use-draggable-scroll": "^0.4.7",
     "typescript": "^5.3.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "jsdom": "^29.0.1",
     "postcss": "^8.5.8",
-    "tailwindcss": "^3.4.19"
+    "tailwindcss": "^3.4.19",
+    "vitest": "^4.1.2"
   }
 }

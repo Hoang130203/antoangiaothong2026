@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/', label: 'Trang chủ' },
   { href: '/posts', label: 'Bài viết' },
   { href: '/videos', label: 'Video' },
+  { href: '/simulation', label: 'Mô phỏng' },
   { href: '/images', label: 'Hình ảnh' },
   { href: '/documents', label: 'Tài liệu' },
   { href: '/exams', label: 'Thi thử' },
