@@ -1,14 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
 
-const variants = {
-  primary: 'bg-orange-500 hover:bg-orange-600 text-white shadow-md hover:shadow-orange-200',
-  secondary: 'bg-navy-800 hover:bg-navy-900 text-white shadow-md',
-  ghost: 'bg-transparent border-2 border-orange-500 text-orange-500 hover:bg-orange-50',
-  danger: 'bg-red-600 hover:bg-red-700 text-white shadow-md',
-  outline: 'bg-white border-2 border-navy-800 text-navy-800 hover:bg-navy-50',
-};
-
 export default function Button({
   children,
   variant = 'primary',
@@ -19,6 +11,44 @@ export default function Button({
   fullWidth = false,
   ...props
 }) {
+  const getStyle = () => {
+    switch (variant) {
+      case 'primary':
+        return {
+          backgroundColor: 'var(--primary)',
+          color: 'white',
+          boxShadow: '0 4px 14px var(--primary-shadow)',
+        };
+      case 'secondary':
+        return {
+          backgroundColor: 'var(--header-bg)',
+          color: 'white',
+        };
+      case 'ghost':
+        return {
+          background: 'transparent',
+          border: '2px solid var(--primary)',
+          color: 'var(--primary)',
+        };
+      case 'danger':
+        return {
+          backgroundColor: '#dc2626',
+          color: 'white',
+        };
+      case 'outline':
+        return {
+          background: 'var(--card-bg)',
+          border: '2px solid var(--text-heading)',
+          color: 'var(--text-heading)',
+        };
+      default:
+        return {
+          backgroundColor: 'var(--primary)',
+          color: 'white',
+        };
+    }
+  };
+
   return (
     <motion.button
       type={type}
@@ -26,12 +56,12 @@ export default function Button({
       disabled={disabled}
       whileTap={{ scale: disabled ? 1 : 0.97 }}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
+      style={getStyle()}
       className={`
         inline-flex items-center justify-center gap-2
         px-5 py-2.5 rounded-xl font-semibold text-sm
-        transition-all duration-200 cursor-pointer
+        transition-colors duration-200 cursor-pointer
         disabled:opacity-50 disabled:cursor-not-allowed
-        ${variants[variant] || variants.primary}
         ${fullWidth ? 'w-full' : ''}
         ${className}
       `}

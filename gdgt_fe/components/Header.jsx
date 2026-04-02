@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Menu, X, LogIn, LogOut, UserPlus, User } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import ThemePicker from './ThemePicker';
 
 const navLinks = [
   { href: '/', label: 'Trang chủ' },
   { href: '/posts', label: 'Bài viết' },
   { href: '/videos', label: 'Video' },
+  { href: '/simulation', label: 'Mô phỏng' },
   { href: '/images', label: 'Hình ảnh' },
   { href: '/documents', label: 'Tài liệu' },
   { href: '/exams', label: 'Thi thử' },
@@ -56,20 +58,26 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-navy-800 shadow-lg shadow-navy-900/30' : 'bg-navy-800'
+        scrolled ? 'shadow-lg' : ''
       }`}
-      style={{ backgroundColor: '#1a2b4a' }}
+      style={{
+        backgroundColor: 'var(--header-bg)',
+        boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.18)' : 'none',
+      }}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="p-1.5 rounded-lg bg-orange-500/20 group-hover:bg-orange-500/30 transition-colors">
-              <ShieldCheck className="w-6 h-6 text-orange-400" />
+          <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+            <div
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ background: 'rgba(255,255,255,0.2)' }}
+            >
+              <ShieldCheck className="w-6 h-6" style={{ color: 'var(--header-accent)' }} />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">
+            <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--header-text)' }}>
               An Toàn{' '}
-              <span className="text-orange-400">Giao Thông</span>
+              <span style={{ color: 'var(--header-accent)' }}>Giao Thông</span>
             </span>
           </Link>
 
@@ -79,25 +87,39 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative px-3 py-2 text-slate-300 hover:text-white text-sm font-medium transition-colors group"
+                className="relative px-3 py-2 text-sm font-medium transition-colors group"
+                style={{ color: 'var(--header-link)' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--header-text)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--header-link)'}
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full"
+                  style={{ background: 'var(--header-accent)' }}
+                />
               </Link>
             ))}
           </div>
 
-          {/* Auth Buttons */}
+          {/* Right side: ThemePicker + Auth */}
           <div className="hidden md:flex items-center gap-2">
+            <ThemePicker />
+
             {!mounted ? (
-              <div className="w-24 h-8 bg-white/10 rounded-lg animate-pulse" />
+              <div className="w-24 h-8 rounded-lg animate-pulse" style={{ background: 'rgba(255,255,255,0.1)' }} />
             ) : user ? (
               <div className="flex items-center gap-3">
-                <Link href="/info" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
+                <Link
+                  href="/info"
+                  className="flex items-center gap-2 transition-colors"
+                  style={{ color: 'var(--header-link)' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--header-text)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--header-link)'}
+                >
                   {avatar ? (
-                    <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2 border-orange-400" />
+                    <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2" style={{ borderColor: 'var(--header-accent)' }} />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
                       <User className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -105,7 +127,10 @@ export default function Header() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                  style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--header-text)' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.25)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
                 >
                   <LogOut className="w-4 h-4" />
                   Đăng xuất
@@ -115,30 +140,42 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                  style={{ color: 'var(--header-link)' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--header-text)'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--header-link)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <LogIn className="w-4 h-4" />
                   Đăng nhập
                 </Link>
                 <Link
                   href="/signup"
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition-all shadow-md"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all shadow-md text-white"
+                  style={{ background: 'var(--header-accent)', color: '#1e1e1e' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 >
                   <UserPlus className="w-4 h-4" />
                   Đăng ký
                 </Link>
               </>
-            ) }
+            )}
           </div>
 
           {/* Mobile Hamburger */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-all"
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <ThemePicker />
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 rounded-lg transition-all"
+              style={{ color: 'var(--header-link)' }}
+              aria-label="Toggle menu"
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -150,8 +187,11 @@ export default function Header() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-white/10 overflow-hidden"
-            style={{ backgroundColor: '#1a2b4a' }}
+            className="md:hidden border-t overflow-hidden"
+            style={{
+              backgroundColor: 'var(--header-mobile-bg)',
+              borderColor: 'rgba(255,255,255,0.1)',
+            }}
           >
             <div className="px-4 py-3 space-y-1">
               {navLinks.map((link) => (
@@ -159,28 +199,35 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 text-sm font-medium transition-all"
+                  className="block px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+                  style={{ color: 'var(--header-link)' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--header-text)'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--header-link)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
+              <div className="pt-2 border-t flex flex-col gap-2" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
                 {user ? (
                   <>
                     <Link href="/info" onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-all">
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
+                      style={{ color: 'var(--header-text)' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                       {avatar ? (
-                        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2 border-orange-400" />
+                        <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover border-2" style={{ borderColor: 'var(--header-accent)' }} />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--primary)' }}>
                           <User className="w-4 h-4 text-white" />
                         </div>
                       )}
-                      <span className="text-white text-sm font-medium">{user}</span>
+                      <span className="text-sm font-medium">{user}</span>
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/10 text-white text-sm font-medium"
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium"
+                      style={{ background: 'rgba(255,255,255,0.1)', color: 'var(--header-text)' }}
                     >
                       <LogOut className="w-4 h-4" /> Đăng xuất
                     </button>
@@ -188,11 +235,13 @@ export default function Header() {
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setMenuOpen(false)}
-                      className="block px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 text-sm font-medium">
+                      className="block px-3 py-2.5 rounded-lg text-sm font-medium"
+                      style={{ color: 'var(--header-link)' }}>
                       Đăng nhập
                     </Link>
                     <Link href="/signup" onClick={() => setMenuOpen(false)}
-                      className="block px-3 py-2.5 rounded-lg bg-orange-500 text-white text-sm font-semibold text-center">
+                      className="block px-3 py-2.5 rounded-lg text-sm font-semibold text-center text-white"
+                      style={{ background: 'var(--primary)' }}>
                       Đăng ký
                     </Link>
                   </>

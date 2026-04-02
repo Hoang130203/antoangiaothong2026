@@ -39,7 +39,7 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ background: 'linear-gradient(135deg, #0f1d33 0%, #1a2b4a 60%, #1e3a5f 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, var(--hero-from) 0%, var(--hero-via) 60%, var(--hero-to) 100%)' }}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -48,16 +48,16 @@ export default function SignIn() {
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex p-3 rounded-2xl bg-orange-500/20 mb-3">
-            <ShieldCheck className="w-8 h-8 text-orange-400" />
+          <div className="inline-flex p-3 rounded-2xl mb-3" style={{ background: 'rgba(255,255,255,0.2)' }}>
+            <ShieldCheck className="w-8 h-8" style={{ color: 'var(--header-accent)' }} />
           </div>
           <h1 className="text-2xl font-bold text-white">An Toàn Giao Thông</h1>
           <p className="text-slate-400 text-sm mt-1">Đăng nhập để tiếp tục</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <h2 className="text-xl font-bold text-slate-800 mb-6">Đăng nhập</h2>
+        <div className="rounded-2xl shadow-2xl p-8" style={{ backgroundColor: 'var(--card-bg)' }}>
+          <h2 className="text-xl font-bold mb-6" style={{ color: 'var(--text-heading)' }}>Đăng nhập</h2>
 
           <div className="space-y-4">
             <div>
@@ -95,7 +95,8 @@ export default function SignIn() {
             whileTap={{ scale: 0.97 }}
             onClick={handleLogin}
             disabled={loading}
-            className="mt-6 w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            className="mt-6 w-full py-3 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            style={{ backgroundColor: 'var(--primary)' }}
           >
             <LogIn className="w-4 h-4" />
             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
@@ -108,9 +109,9 @@ export default function SignIn() {
           </div>
           <SigninButton />
 
-          <p className="mt-5 text-center text-sm text-slate-500">
+          <p className="mt-5 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
             Chưa có tài khoản?{' '}
-            <Link href="/signup" className="text-orange-500 hover:text-orange-600 font-semibold">
+            <Link href="/signup" className="font-semibold" style={{ color: 'var(--primary)' }}>
               Đăng ký ngay
             </Link>
           </p>

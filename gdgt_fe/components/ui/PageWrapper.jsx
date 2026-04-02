@@ -8,6 +8,7 @@ export default function PageWrapper({ children, className = '' }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={`min-h-screen ${className}`}
+      style={{ backgroundColor: 'var(--page-bg)' }}
     >
       {children}
     </motion.div>

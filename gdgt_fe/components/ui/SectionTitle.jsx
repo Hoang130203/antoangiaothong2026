@@ -1,12 +1,20 @@
 export default function SectionTitle({ children, subtitle, className = '' }) {
   return (
     <div className={`mb-8 ${className}`}>
-      <h2 className="text-2xl md:text-3xl font-bold text-navy-800 relative inline-block">
+      <h2
+        className="text-2xl md:text-3xl font-black relative inline-block"
+        style={{ color: 'var(--text-heading)', fontFamily: 'Nunito, sans-serif' }}
+      >
         {children}
-        <span className="absolute -bottom-1 left-0 right-0 h-1 bg-orange-500 rounded-full" />
+        <span
+          className="absolute -bottom-1 left-0 right-0 h-1 rounded-full"
+          style={{ background: `linear-gradient(90deg, var(--primary), var(--accent))` }}
+        />
       </h2>
       {subtitle && (
-        <p className="mt-3 text-slate-500 text-base">{subtitle}</p>
+        <p className="mt-3 text-base font-semibold" style={{ color: 'var(--text-muted)' }}>
+          {subtitle}
+        </p>
       )}
     </div>
   );
