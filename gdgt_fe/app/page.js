@@ -317,7 +317,7 @@ export default function Home() {
             className="text-center mb-14"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4"
-              style={{ background: `${getComputedStyle ? 'var(--primary)' : '#FF6B35'}20`, color: 'var(--primary)' }}>
+              style={{ background: `${typeof window !== 'undefined' ? 'var(--primary)' : '#FF6B35'}20`, color: 'var(--primary)' }}>
               <Star className="w-4 h-4" />
               Khám phá nội dung
             </div>
