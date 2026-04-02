@@ -59,18 +59,18 @@ export default function Exams() {
 
       <div className="max-w-5xl mx-auto px-4 py-10">
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-slate-200">
+        <div className="flex gap-2 mb-8" style={{ borderBottom: '2px solid var(--card-border)' }}>
           {['Danh sách đề thi', 'Kết quả của tôi'].map((label, i) => (
             <button
               key={i}
               onClick={() => setTab(i)}
-              className={`px-5 py-3 text-sm font-semibold transition-all relative ${
-                tab === i ? 'text-orange-500' : 'text-slate-500 hover:text-slate-700'
-              }`}
+              className={`px-5 py-3 text-sm font-bold transition-all relative`}
+              style={{ color: tab === i ? 'var(--primary)' : 'var(--text-muted)' }}
             >
               {label}
               {tab === i && (
-                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                  style={{ backgroundColor: 'var(--primary)' }} />
               )}
             </button>
           ))}
@@ -84,7 +84,8 @@ export default function Exams() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowForm(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-semibold text-sm transition-all"
+                  style={{ backgroundColor: 'var(--primary)' }}
                 >
                   <Plus className="w-4 h-4" /> Thêm bài thi
                 </motion.button>
@@ -138,8 +139,8 @@ export default function Exams() {
                 <motion.div key={item.id} variants={itemVariants}>
                   <Card className="flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="p-2 rounded-xl bg-orange-50">
-                        <ClipboardList className="w-5 h-5 text-orange-500" />
+                      <div className="p-2 rounded-xl" style={{ background: 'color-mix(in srgb, var(--primary) 10%, white)' }}>
+                        <ClipboardList className="w-5 h-5" style={{ color: 'var(--primary)' }} />
                       </div>
                       <Badge color={getDifficultyColor(item.time)}>
                         {getDifficultyLabel(item.time)}
@@ -154,7 +155,8 @@ export default function Exams() {
                       <Link href={`/exams/${item.id}`} className="flex-1">
                         <motion.button
                           whileTap={{ scale: 0.97 }}
-                          className="w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+                          className="w-full py-2.5 px-4 rounded-xl text-white font-semibold text-sm transition-all"
+                          style={{ backgroundColor: 'var(--primary)' }}
                         >
                           Làm bài thi
                         </motion.button>
@@ -185,7 +187,8 @@ export default function Exams() {
             <p className="text-lg font-medium text-slate-600 mb-2">Kết quả của bạn</p>
             <p className="text-sm">Tham gia bài thi để xem kết quả ở đây.</p>
             <Link href="/exams" onClick={() => setTab(0)}>
-              <button className="mt-6 px-6 py-2.5 rounded-xl bg-orange-500 text-white font-semibold text-sm hover:bg-orange-600 transition-all">
+              <button className="mt-6 px-6 py-2.5 rounded-xl text-white font-semibold text-sm transition-all"
+                style={{ backgroundColor: 'var(--primary)' }}>
                 Xem đề thi
               </button>
             </Link>

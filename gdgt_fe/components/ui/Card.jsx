@@ -4,12 +4,16 @@ import { motion } from 'framer-motion';
 export default function Card({ children, className = '', onClick, padding = 'p-6' }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(26,43,74,0.12)' }}
+      whileHover={{ scale: 1.02, boxShadow: '0 20px 40px rgba(0,0,0,0.10)' }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       onClick={onClick}
+      style={{
+        backgroundColor: 'var(--card-bg)',
+        border: '1.5px solid var(--card-border)',
+      }}
       className={`
-        bg-white rounded-2xl shadow-sm border border-slate-100
-        transition-all duration-200
+        rounded-2xl shadow-sm
+        transition-colors duration-300
         ${onClick ? 'cursor-pointer' : ''}
         ${padding}
         ${className}

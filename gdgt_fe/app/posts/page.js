@@ -60,24 +60,33 @@ export default function Posts() {
 
         {/* Create post bar */}
         {user && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-8 flex items-center gap-3">
+          <div className="rounded-2xl shadow-sm p-4 mb-8 flex items-center gap-3"
+            style={{ backgroundColor: 'var(--card-bg)', border: '1.5px solid var(--card-border)' }}>
             {avatar ? (
-              <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-orange-200" />
+              <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2"
+                style={{ borderColor: 'var(--accent)' }} />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <User className="w-5 h-5 text-orange-500" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 12%, white)' }}>
+                <User className="w-5 h-5" style={{ color: 'var(--primary)' }} />
               </div>
             )}
             <button
               onClick={() => setShowForm(true)}
-              className="flex-1 text-left px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-300 text-slate-400 hover:text-slate-600 text-sm transition-all"
+              className="flex-1 text-left px-4 py-2.5 rounded-xl text-sm transition-all"
+              style={{
+                backgroundColor: 'var(--page-bg)',
+                border: '1.5px solid var(--card-border)',
+                color: 'var(--text-muted)',
+              }}
             >
               Đăng bài viết mới về an toàn giao thông...
             </button>
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowForm(true)}
-              className="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition-all"
+              className="p-2 rounded-xl text-white transition-all"
+              style={{ backgroundColor: 'var(--primary)' }}
             >
               <Plus className="w-5 h-5" />
             </motion.button>
@@ -127,7 +136,10 @@ export default function Posts() {
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-800 text-base leading-snug mb-2 line-clamp-2 hover:text-orange-500 transition-colors">
+                      <h3 className="font-semibold text-base leading-snug mb-2 line-clamp-2 transition-colors"
+                        style={{ color: 'var(--text-heading)' }}
+                        onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+                        onMouseLeave={e => e.currentTarget.style.color = 'var(--text-heading)'}>
                         {item.title}
                       </h3>
                       <div className="flex items-center gap-4 text-xs text-slate-400">

@@ -2,15 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* ── Default Theme Variables (Sunny - default) ── */
 :root {
-  --navy: #1a2b4a;
-  --orange: #f97316;
-  --amber: #f59e0b;
-  --green: #16a34a;
-  --red: #dc2626;
-  --bg: #f8fafc;
+  --header-bg: #FF6B35;
+  --header-text: #ffffff;
+  --header-link: rgba(255,255,255,0.85);
+  --header-link-hover: #ffffff;
+  --header-accent: #FFD23F;
+  --header-mobile-bg: #FF6B35;
+  --page-bg: #fffdf7;
+  --card-bg: #ffffff;
+  --card-border: #ffe5d0;
+  --primary: #FF6B35;
+  --primary-hover: #e55a25;
+  --primary-shadow: rgba(255,107,53,0.35);
+  --accent: #FFD23F;
+  --text-heading: #7c2d12;
+  --text-body: #92400e;
+  --text-muted: #b45309;
+  --footer-bg: #FF6B35;
+  --footer-text: #ffffff;
+  --footer-muted: rgba(255,255,255,0.7);
+  --footer-accent: #FFD23F;
+  --hero-from: #FF6B35;
+  --hero-via: #f97316;
+  --hero-to: #FFD23F;
+  --hero-text: #ffffff;
+  --hero-sub: rgba(255,255,255,0.85);
+  --btn-outline-border: rgba(255,255,255,0.5);
+  --stats-bg: #FFD23F;
+  --stats-text: #7c2d12;
+  --stats-sub: rgba(124,45,18,0.7);
+  --cta-bg: #FF6B35;
+  --accent-line: #FFD23F;
+  --scrollbar: #ffb899;
 }
 
 * {
@@ -22,9 +49,10 @@
 html, body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--bg);
-  color: #1e293b;
+  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  background-color: var(--page-bg);
+  color: var(--text-body);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 a {
@@ -37,14 +65,64 @@ a {
   width: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--scrollbar);
   border-radius: 6px;
 }
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
-/* Loader */
+/* ── Decorative background pattern ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 25%),
+    radial-gradient(circle at 80% 20%, var(--accent) 0%, transparent 25%);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Floating decoration blobs ── */
+.deco-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.18;
+  animation: blobFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.deco-blob-2 { animation-delay: -3s; }
+.deco-blob-3 { animation-delay: -6s; }
+
+@keyframes blobFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* ── Sparkle animation ── */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+/* ── Page transition animation ── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+main {
+  animation: pageIn 0.4s ease-out;
+}
+
+/* ── Loader ── */
 .loader_container {
   display: flex;
   justify-content: center;
@@ -54,25 +132,26 @@ a {
   left: 0;
   width: 100vw;
   position: fixed;
-  background-color: rgba(26, 43, 74, 0.3);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0,0,0,0.2);
+  backdrop-filter: blur(6px);
   z-index: 99;
 }
 
 .loader_spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid rgba(249, 115, 22, 0.2);
-  border-top-color: #f97316;
+  width: 52px;
+  height: 52px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 20px var(--primary-shadow);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Traffic light animation */
+/* ── Traffic light animation ── */
 @keyframes trafficCycle {
   0%, 30% { opacity: 1; }
   35%, 100% { opacity: 0.15; }
@@ -92,31 +171,44 @@ a {
 .traffic-amber { animation: trafficCycleAmber 6s ease-in-out infinite; }
 .traffic-green { animation: trafficCycleGreen 6s ease-in-out infinite; }
 
-/* Marquee */
+/* ── Marquee ── */
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
 }
 .animate-marquee { animation: marquee 30s linear infinite; }
 
-/* Quiz answer buttons */
+/* ── Quiz answer buttons ── */
 .quiz-btn {
   display: block;
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
-  border-radius: 10px;
-  border: 2px solid #e2e8f0;
-  background: white;
+  border-radius: 14px;
+  border: 2px solid var(--card-border);
+  background: var(--card-bg);
   text-align: left;
   cursor: pointer;
   font-size: 15px;
-  color: #1e293b;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  color: var(--text-body);
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
+.quiz-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.quiz-btn:hover:not(:disabled)::before { opacity: 0.06; }
 .quiz-btn:hover:not(:disabled) {
-  border-color: #f97316;
-  background: #fff7ed;
+  border-color: var(--primary);
+  transform: translateX(4px);
 }
 .quiz-btn:disabled { cursor: not-allowed; }
 .quiz-btn.correct {
@@ -128,4 +220,255 @@ a {
   border-color: #dc2626;
   background: #fef2f2;
   color: #b91c1c;
+}
+
+/* ── Theme transition for all elements ── */
+header, footer, section, .card-themed {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+/* ── Confetti dots decoration ── */
+@keyframes floatDot {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Shine effect for cards ── */
+@keyframes cardShine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: translateX(-100%) skewX(-15deg);
+}
+.card-shine:hover::after {
+  animation: cardShine 0.7s ease forwards;
+}
+
+/* ── Fun bounce animation ── */
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.bounce-in { animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+
+/* ── Pulse glow for primary elements ── */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--primary-shadow); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* ── Rainbow gradient text ── */
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.rainbow-text {
+  background: linear-gradient(270deg, #FF6B35, #FFD23F, #FF6B35, #f97316);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowShift 3s ease infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL THEME OVERRIDES — map all hardcoded colors
+   to CSS variables so every page follows the theme
+   ═══════════════════════════════════════════════════ */
+
+/* ── Page backgrounds ── */
+.min-h-screen:not([style*="background"]) {
+  background-color: var(--page-bg);
+}
+
+/* ── Login & Signup background ── */
+[style*="linear-gradient(135deg, #0f1d33"] {
+  background: linear-gradient(135deg, var(--hero-from) 0%, var(--hero-via) 60%, var(--hero-to) 100%) !important;
+}
+
+/* ── White card panels ── */
+.bg-white {
+  background-color: var(--card-bg) !important;
+}
+.border-slate-100 {
+  border-color: var(--card-border) !important;
+}
+.border-slate-200 {
+  border-color: var(--card-border) !important;
+}
+
+/* ── Text colors ── */
+.text-slate-800, .text-slate-900 {
+  color: var(--text-heading) !important;
+}
+.text-slate-600, .text-slate-700 {
+  color: var(--text-body) !important;
+}
+.text-slate-500, .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+/* ── Primary orange → theme primary ── */
+.bg-orange-500 {
+  background-color: var(--primary) !important;
+}
+.hover\:bg-orange-600:hover {
+  background-color: var(--primary-hover) !important;
+}
+.bg-orange-600 {
+  background-color: var(--primary-hover) !important;
+}
+.text-orange-500 {
+  color: var(--primary) !important;
+}
+.text-orange-400 {
+  color: var(--accent) !important;
+}
+.text-orange-600 {
+  color: var(--primary-hover) !important;
+}
+.hover\:text-orange-500:hover {
+  color: var(--primary) !important;
+}
+.hover\:text-orange-600:hover {
+  color: var(--primary-hover) !important;
+}
+.border-orange-500 {
+  border-color: var(--primary) !important;
+}
+.border-orange-400 {
+  border-color: var(--accent) !important;
+}
+.hover\:border-orange-400:hover {
+  border-color: var(--accent) !important;
+}
+.hover\:border-orange-300:hover {
+  border-color: var(--primary) !important;
+}
+.focus\:border-orange-400:focus {
+  border-color: var(--primary) !important;
+}
+.focus\:ring-orange-100:focus {
+  --tw-ring-color: color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+.bg-orange-50 {
+  background-color: color-mix(in srgb, var(--primary) 8%, white) !important;
+}
+.bg-orange-100 {
+  background-color: color-mix(in srgb, var(--primary) 15%, white) !important;
+}
+.hover\:bg-orange-50:hover {
+  background-color: color-mix(in srgb, var(--primary) 8%, white) !important;
+}
+.hover\:bg-orange-600:hover {
+  background-color: var(--primary-hover) !important;
+}
+.text-orange-300 {
+  color: color-mix(in srgb, var(--accent) 80%, white) !important;
+}
+.bg-orange-500\/20 {
+  background-color: color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+.bg-orange-500\/30 {
+  background-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
+}
+.border-orange-500\/30 {
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
+}
+.shadow-orange-500\/30 {
+  --tw-shadow-color: var(--primary-shadow) !important;
+}
+
+/* ── Navy/dark sidebar → theme primary ── */
+.bg-navy-800, [style*="background-color: #1a2b4a"] {
+  background-color: var(--header-bg) !important;
+}
+.text-navy-800 {
+  color: var(--text-heading) !important;
+}
+.hover\:text-orange-400:hover {
+  color: var(--accent) !important;
+}
+
+/* ── Tab active underline ── */
+.bg-orange-500.rounded-full[style] {
+  background-color: var(--primary) !important;
+}
+
+/* ── Progress bar ── */
+.bg-orange-500.rounded-full:not([class*="w-"]) {
+  background-color: var(--primary) !important;
+}
+
+/* ── Buttons across all pages ── */
+button.bg-orange-500,
+a.bg-orange-500,
+.bg-orange-500:is(button, a, [role="button"]) {
+  background-color: var(--primary) !important;
+}
+
+/* ── Tabs ── */
+.text-orange-500:is(button) {
+  color: var(--primary) !important;
+}
+
+/* ── Section headings underline bar ── */
+.bg-orange-500.absolute,
+.bg-orange-500.rounded-full.absolute {
+  background-color: var(--primary) !important;
+}
+
+/* ── Input focus rings ── */
+input:focus {
+  border-color: var(--primary) !important;
+  outline-color: var(--primary) !important;
+}
+
+/* ── Scroll progress indicators ── */
+.h-0\.5.bg-orange-500 {
+  background-color: var(--primary) !important;
+}
+
+/* ── Stat score in exam result ── */
+.text-orange-500.text-4xl {
+  color: var(--primary) !important;
+}
+
+/* ── Amber accent (trophy, star) — keep as-is for semantic meaning ── */
+
+/* ── Smooth bg transition on theme switch ── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+/* Exclude animations from transition override */
+[class*="animate-"], [class*="motion"], .loader_spinner {
+  transition: none !important;
+}
+
+/* ── Page background for all routes ── */
+body > div, #__next {
+  background-color: var(--page-bg);
+}
+
+/* ── Force nav underline to use theme accent ── */
+.group-hover\:scale-x-100 {
+  background-color: var(--header-accent) !important;
+}
+
+/* ── Scrollbar themed ── */
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar) !important;
 }

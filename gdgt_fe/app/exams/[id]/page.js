@@ -119,7 +119,7 @@ export default function ExamDetail({ params }) {
       <div className="max-w-2xl mx-auto px-4 py-10">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1" style={{ color: '#1a2b4a' }}>{examName}</h1>
+          <h1 className="text-2xl font-black mb-1" style={{ color: 'var(--text-heading)', fontFamily: 'Nunito, sans-serif' }}>{examName}</h1>
           <div className="flex items-center justify-between">
             <p className="text-slate-500 text-sm">
               Câu {Math.min(currentQuestionIndex + 1, questions.length)} / {questions.length}
@@ -131,9 +131,10 @@ export default function ExamDetail({ params }) {
           </div>
 
           {/* Progress bar */}
-          <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--card-border)' }}>
             <motion.div
-              className="h-full bg-orange-500 rounded-full"
+              className="h-full rounded-full"
+              style={{ backgroundColor: 'var(--primary)' }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
             />
@@ -145,15 +146,16 @@ export default function ExamDetail({ params }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-10 text-center"
+            className="rounded-2xl shadow-sm p-10 text-center"
+            style={{ backgroundColor: 'var(--card-bg)', border: '1.5px solid var(--card-border)' }}
           >
             <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Hoàn thành!</h2>
-            <p className="text-slate-500 mb-6">Bài kiểm tra an toàn giao thông</p>
+            <h2 className="text-2xl font-black mb-2" style={{ color: 'var(--text-heading)' }}>Hoàn thành!</h2>
+            <p className="mb-6" style={{ color: 'var(--text-muted)' }}>Bài kiểm tra an toàn giao thông</p>
             <div className="flex justify-center gap-8 mb-8">
               <div>
-                <div className="text-4xl font-black text-orange-500">{score}</div>
-                <div className="text-slate-400 text-sm">Câu đúng</div>
+                <div className="text-4xl font-black" style={{ color: 'var(--primary)' }}>{score}</div>
+                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Câu đúng</div>
               </div>
               <div className="w-px bg-slate-200" />
               <div>
@@ -179,7 +181,7 @@ export default function ExamDetail({ params }) {
           </motion.div>
         ) : (
           /* Quiz screen */
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <div className="rounded-2xl shadow-sm p-6" style={{ backgroundColor: 'var(--card-bg)', border: '1.5px solid var(--card-border)' }}>
             <h2 className="text-base font-semibold text-slate-800 mb-5 leading-relaxed">{questionText}</h2>
 
             <div className="space-y-3">
@@ -216,7 +218,8 @@ export default function ExamDetail({ params }) {
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={handleNext}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-semibold text-sm transition-all"
+                  style={{ backgroundColor: 'var(--primary)' }}
                 >
                   {currentQuestionIndex < questions.length - 1 ? (
                     <><ChevronRight className="w-4 h-4" /> Câu tiếp theo</>
