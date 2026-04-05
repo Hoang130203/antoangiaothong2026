@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, X, Play } from 'lucide-react';
+import { Plus, X, Play, Trash2, Edit } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
@@ -40,6 +40,28 @@ export default function Videos() {
       .catch(() => setLoaded(true));
   }, []);
 
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('Bạn có chắc muốn xóa video này?')) return;
+    try {
+      await Api.deleteVideo(id);
+      setListVideos(prev => prev.filter(v => v.id !== id));
+      setToast({ message: 'Xóa video thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Xóa video thất bại!', type: 'error' });
+    }
+  };
+
+  const [editingVideo, setEditingVideo] = useState(null);
+
+  const handleEdit = (e, video) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingVideo(video);
+    setShowForm(true);
+  };
+
   return (
     <PageWrapper>
       {!loaded && (
@@ -71,13 +93,22 @@ export default function Videos() {
                 <X className="w-4 h-4" />
               </button>
               <FormVideo
-                handleClick={() => setShowForm(false)}
-                onSuccess={(newVideo) => {
-                  if (newVideo) {
-                    setListVideos((prev) => [newVideo, ...prev]);
-                    setToast({ message: 'Đăng video thành công!', type: 'success' });
+                handleClick={() => {
+                  setShowForm(false);
+                  setEditingVideo(null);
+                }}
+                editingVideo={editingVideo}
+                onSuccess={(video) => {
+                  if (video) {
+                    if (editingVideo) {
+                      setListVideos(prev => prev.map(v => v.id === video.id ? video : v));
+                      setToast({ message: 'Cập nhật video thành công!', type: 'success' });
+                    } else {
+                      setListVideos((prev) => [video, ...prev]);
+                      setToast({ message: 'Đăng video thành công!', type: 'success' });
+                    }
                   } else {
-                    setToast({ message: 'Đăng video thất bại, thử lại!', type: 'error' });
+                    setToast({ message: editingVideo ? 'Cập nhật thất bại!' : 'Đăng video thất bại!', type: 'error' });
                   }
                 }}
               />
@@ -111,6 +142,23 @@ export default function Videos() {
                         <Play className="w-5 h-5 text-white ml-0.5" />
                       </motion.div>
                     </div>
+
+                    {isAdmin && (
+                      <div className="absolute top-2 right-2 flex gap-2 z-20">
+                        <button
+                          onClick={(e) => handleEdit(e, item)}
+                          className="p-1.5 bg-white/90 hover:bg-white rounded-lg text-blue-500 shadow-sm transition-all"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDelete(e, item.id)}
+                          className="p-1.5 bg-white/90 hover:bg-white rounded-lg text-red-500 shadow-sm transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {/* Info */}
                   <div className="p-4">

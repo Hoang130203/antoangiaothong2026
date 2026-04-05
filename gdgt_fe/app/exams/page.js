@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Plus, X, Clock, ClipboardList, Trophy } from 'lucide-react';
+import { Plus, X, Clock, ClipboardList, Trophy, Trash2, Edit } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
@@ -48,6 +48,28 @@ export default function Exams() {
       setLoaded(true);
     }).catch(() => setLoaded(true));
   }, []);
+
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('Bạn có chắc muốn xóa đề thi này?')) return;
+    try {
+      await Api.deleteExam(id);
+      setListExams(prev => prev.filter(ex => ex.id !== id));
+      setToast({ message: 'Xóa đề thi thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Xóa đề thi thất bại!', type: 'error' });
+    }
+  };
+
+  const [editingExam, setEditingExam] = useState(null);
+
+  const handleEdit = (e, exam) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingExam(exam);
+    setShowForm(true);
+  };
 
   return (
     <PageWrapper>
@@ -101,13 +123,22 @@ export default function Exams() {
                     <X className="w-4 h-4" />
                   </button>
                   <AddExam
-                    handleClose={() => setShowForm(false)}
-                    onSuccess={(newExam) => {
-                      if (newExam) {
-                        setListExams((prev) => [...prev, newExam]);
-                        setToast({ message: 'Thêm bài thi thành công!', type: 'success' });
+                    handleClose={() => {
+                        setShowForm(false);
+                        setEditingExam(null);
+                    }}
+                    editingExam={editingExam}
+                    onSuccess={(exam) => {
+                      if (exam) {
+                        if (editingExam) {
+                          setListExams(prev => prev.map(ex => ex.id === exam.id ? exam : ex));
+                          setToast({ message: 'Cập nhật đề thi thành công!', type: 'success' });
+                        } else {
+                          setListExams((prev) => [...prev, exam]);
+                          setToast({ message: 'Thêm bài thi thành công!', type: 'success' });
+                        }
                       } else {
-                        setToast({ message: 'Thêm bài thi thất bại, thử lại!', type: 'error' });
+                        setToast({ message: editingExam ? 'Cập nhật thất bại!' : 'Thêm bài thi thất bại!', type: 'error' });
                       }
                     }}
                   />
@@ -145,6 +176,22 @@ export default function Exams() {
                       <Badge color={getDifficultyColor(item.time)}>
                         {getDifficultyLabel(item.time)}
                       </Badge>
+                      {isAdmin && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => handleEdit(e, item)}
+                            className="p-1.5 hover:bg-slate-100 rounded-lg text-blue-500 transition-all"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => handleDelete(e, item.id)}
+                            className="p-1.5 hover:bg-slate-100 rounded-lg text-red-500 transition-all"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <h3 className="font-bold text-slate-800 text-base mb-2 flex-1">{item.name}</h3>
                     <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">

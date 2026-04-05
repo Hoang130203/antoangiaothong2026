@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Clock, User, Plus, X } from 'lucide-react';
+import { Clock, User, Plus, X, Edit, Trash2 } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Card from '@/components/ui/Card';
@@ -25,12 +25,14 @@ export default function Posts() {
   const [showForm, setShowForm] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
     try {
       setAvatar(localStorage.getItem('avatar'));
       setUser(localStorage.getItem('user'));
+      setIsAdmin(localStorage.getItem('account') === 'admin');
     } catch {}
     Api.getPost()
       .then((res) => {
@@ -47,6 +49,28 @@ export default function Posts() {
     } catch { return dateStr; }
   };
 
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('Báº¡n cÃ³ cháº¯c muá»‘n xÃ³a bÃ i viáº¿t nÃ y?')) return;
+    try {
+      await Api.deletePost(id);
+      setListPost(prev => prev.filter(p => p.id !== id));
+      setToast({ message: 'XÃ³a bÃ i viáº¿t thÃ nh cÃ´ng!', type: 'success' });
+    } catch {
+      setToast({ message: 'XÃ³a bÃ i viáº¿t tháº¥t báº¡i!', type: 'error' });
+    }
+  };
+
+  const [editingPost, setEditingPost] = useState(null);
+
+  const handleEdit = (e, post) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingPost(post);
+    setShowForm(true);
+  };
+
   return (
     <PageWrapper>
       {!loaded && (
@@ -56,7 +80,7 @@ export default function Posts() {
       )}
 
       <div className="max-w-3xl mx-auto px-4 py-10">
-        <SectionTitle subtitle="Các bài viết về an toàn giao thông">Bài Viết</SectionTitle>
+        <SectionTitle subtitle="CÃ¡c bÃ i viáº¿t vá» an toÃ n giao thÃ´ng">BÃ i Viáº¿t</SectionTitle>
 
         {/* Create post bar */}
         {user && (
@@ -80,7 +104,7 @@ export default function Posts() {
                 color: 'var(--text-muted)',
               }}
             >
-              Đăng bài viết mới về an toàn giao thông...
+              ÄÄƒng bÃ i viáº¿t má»›i vá» an toÃ n giao thÃ´ng...
             </button>
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -98,17 +122,26 @@ export default function Posts() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
             <div className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" style={{ backgroundColor: 'rgba(26,43,74,0.5)' }} />
             <div className="relative z-10 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-              <button onClick={() => setShowForm(false)} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 hover:text-slate-700 z-20">
+              <button onClick={() => { setShowForm(false); setEditingPost(null); }} className="absolute -top-3 -right-3 p-1.5 bg-white rounded-full shadow-lg text-slate-500 hover:text-slate-700 z-20">
                 <X className="w-4 h-4" />
               </button>
               <FormPost
-                handleClick={() => setShowForm(false)}
-                onSuccess={(newPost) => {
-                  if (newPost) {
-                    setListPost((prev) => [newPost, ...prev]);
-                    setToast({ message: 'Đăng bài thành công!', type: 'success' });
+                handleClick={() => {
+                  setShowForm(false);
+                  setEditingPost(null);
+                }}
+                editingPost={editingPost}
+                onSuccess={(post) => {
+                  if (post) {
+                    if (editingPost) {
+                      setListPost(prev => prev.map(p => p.id === post.id ? post : p));
+                      setToast({ message: 'Cáº­p nháº­t bÃ i viáº¿t thÃ nh cÃ´ng!', type: 'success' });
+                    } else {
+                      setListPost((prev) => [post, ...prev]);
+                      setToast({ message: 'ÄÄƒng bÃ i thÃ nh cÃ´ng!', type: 'success' });
+                    }
                   } else {
-                    setToast({ message: 'Đăng bài thất bại, thử lại!', type: 'error' });
+                    setToast({ message: editingPost ? 'Cáº­p nháº­t tháº¥t báº¡i!' : 'ÄÄƒng bÃ i tháº¥t báº¡i!', type: 'error' });
                   }
                 }}
               />
@@ -118,10 +151,10 @@ export default function Posts() {
 
         {/* Post list */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={loaded ? 'show' : 'hidden'}
-          className="space-y-4"
+           variants={containerVariants}
+           initial="hidden"
+           animate={loaded ? 'show' : 'hidden'}
+           className="space-y-4"
         >
           {listPost.map((item) => (
             <motion.div key={item.id} variants={itemVariants}>
@@ -153,6 +186,23 @@ export default function Posts() {
                         </span>
                       </div>
                     </div>
+
+                    {isAdmin && (
+                      <div className="flex flex-col gap-2 z-20">
+                        <button
+                          onClick={(e) => handleEdit(e, item)}
+                          className="p-1.5 hover:bg-slate-100 rounded-lg text-blue-500 transition-all"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDelete(e, item.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded-lg text-red-500 transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </Card>
               </Link>
@@ -160,7 +210,7 @@ export default function Posts() {
           ))}
           {loaded && listPost.length === 0 && (
             <div className="text-center py-16 text-slate-400">
-              <p className="text-lg">Chưa có bài viết nào.</p>
+              <p className="text-lg">ChÆ°a cÃ³ bÃ i viáº¿t nÃ o.</p>
             </div>
           )}
         </motion.div>

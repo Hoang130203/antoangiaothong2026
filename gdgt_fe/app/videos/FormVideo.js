@@ -4,9 +4,9 @@ import { X, Video as Youtube, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Api from '../api/api';
 
-export default function FormVideo({ handleClick, onSuccess }) {
-  const [idVideo, setIdVideo] = useState('');
-  const [title, setTitle] = useState('');
+export default function FormVideo({ handleClick, onSuccess, editingVideo }) {
+  const [idVideo, setIdVideo] = useState(editingVideo ? `https://www.youtube.com/watch?v=${editingVideo.youtubeId}` : '');
+  const [title, setTitle] = useState(editingVideo ? editingVideo.title : '');
   const [loaded, setLoaded] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -21,8 +21,13 @@ export default function FormVideo({ handleClick, onSuccess }) {
     setIsDisabled(true);
     try {
       const youtubeId = idVideo.replace('https://www.youtube.com/watch?v=', '').split('&')[0];
-      const res = await Api.postVideo(title, youtubeId);
-      const newVideo = res?.data || { id: Date.now(), title, youtubeId, owner: { name } };
+      let res;
+      if (editingVideo) {
+        res = await Api.updateVideo(editingVideo.id, { ...editingVideo, title, youtubeId });
+      } else {
+        res = await Api.postVideo(title, youtubeId);
+      }
+      const newVideo = res?.data || { id: editingVideo?.id || Date.now(), title, youtubeId, owner: { name } };
       if (onSuccess) onSuccess(newVideo);
       handleClick();
     } catch {
@@ -44,7 +49,7 @@ export default function FormVideo({ handleClick, onSuccess }) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <div />
-        <h3 className="font-bold text-slate-800 text-base">Đăng video</h3>
+        <h3 className="font-bold text-slate-800 text-base">{editingVideo ? 'Chỉnh sửa video' : 'Đăng video'}</h3>
         <button onClick={handleClick} className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all">
           <X className="w-5 h-5" />
         </button>
@@ -108,7 +113,7 @@ export default function FormVideo({ handleClick, onSuccess }) {
           disabled={isDisabled || !title.trim() || !idVideo.trim()}
           className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all disabled:opacity-50"
         >
-          {isDisabled ? 'Đang đăng...' : 'Đăng video'}
+          {isDisabled ? (editingVideo ? 'Đang cập nhật...' : 'Đang đăng...') : (editingVideo ? 'Cập nhật video' : 'Đăng video')}
         </motion.button>
       </div>
     </div>

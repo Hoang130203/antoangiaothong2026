@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, Trash2 } from 'lucide-react';
 import PageWrapper from '@/components/ui/PageWrapper';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Toast from '@/components/ui/Toast';
@@ -39,6 +39,17 @@ export default function Images() {
       setToast({ message: 'Thêm ảnh thất bại, thử lại!', type: 'error' });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Bạn có chắc muốn xóa ảnh này?')) return;
+    try {
+      await Api.deleteImage(id);
+      setImageUrls(prev => prev.filter(img => img.id !== id));
+      setToast({ message: 'Xóa ảnh thành công!', type: 'success' });
+    } catch {
+      setToast({ message: 'Xóa ảnh thất bại!', type: 'error' });
     }
   };
 
@@ -85,12 +96,20 @@ export default function Images() {
           className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4"
         >
           {imageUrls.map((image, index) => (
-            <motion.div key={index} variants={itemVariants} className="break-inside-avoid">
+            <motion.div key={index} variants={itemVariants} className="break-inside-avoid relative group">
               <img
                 src={image.url}
                 alt={`Hình ${index + 1}`}
                 className="w-full rounded-2xl shadow-sm hover:shadow-md transition-all"
               />
+              {isAdmin && (
+                <button
+                  onClick={() => handleDelete(image.id)}
+                  className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white rounded-lg text-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-all z-10"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
             </motion.div>
           ))}
           {loaded && imageUrls.length === 0 && (
