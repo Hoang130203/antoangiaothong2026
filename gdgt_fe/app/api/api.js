@@ -83,6 +83,14 @@ class Api {
         return await axios.get(`${base_url}/api/users/allpost`, plainConfig());
     }
 
+    async deletePost(id) {
+        return await axios.delete(`${base_url}/api/users/deleteposts/${id}`, authConfig());
+    }
+
+    async updatePost(id, post) {
+        return await axios.put(`${base_url}/api/users/updatepost/${id}`, post, authConfig());
+    }
+
     async getPostById(id) {
         const { user } = getCreds();
         return await axios.get(`${base_url}/api/posts/${id}?userId=${user}`, plainConfig());
@@ -122,6 +130,18 @@ class Api {
 
     async getVideoById(id) {
         return await axios.get(`${base_url}/api/videos/getVideoById/${id}`, plainConfig());
+    }
+
+    async deleteVideo(id) {
+        return await axios.delete(`${base_url}/api/videos/deleteVideo/${id}`, authConfig());
+    }
+
+    async updateVideo(id, video) {
+        return await axios.put(`${base_url}/api/videos/updateVideo/${id}`, video, authConfig());
+    }
+
+    async deleteImage(id) {
+        return await axios.delete(`${base_url}/api/videos/deleteImage/${id}`, authConfig());
     }
 
     // ─── Images ──────────────────────────────────────────────────────────────
@@ -166,6 +186,14 @@ class Api {
 
     async getRank(examId) {
         return await axios.get(`${base_url}/api/exams/rank?examId=${examId}`, authConfig());
+    }
+
+    async deleteExam(id) {
+        return await axios.delete(`${base_url}/api/exams/deleteExam/${id}`, authConfig());
+    }
+
+    async updateExam(id, exam) {
+        return await axios.put(`${base_url}/api/exams/updateExam/${id}`, exam, authConfig());
     }
 
     // ─── User info ───────────────────────────────────────────────────────────

@@ -1,0 +1,10 @@
+﻿C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\CommentRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\ExamRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\ImageRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\PostRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\QuestionRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\ReactRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\ResultRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\RoleRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\UserRepository.java
+C:\Users\Admin\antoangiaothong2026\atgt_backend\src\main\java\com\example\antoangiaothong\atgt\Repository\VideoRepository.java

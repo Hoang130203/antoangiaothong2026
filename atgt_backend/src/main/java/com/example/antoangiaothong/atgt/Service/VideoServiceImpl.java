@@ -79,4 +79,28 @@ public class VideoServiceImpl implements VideoService{
         imageRepository.save(image);
         return image;
     }
+
+    @Override
+    @Transactional
+    public void deleteVideo(int id) {
+        videoRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Video updateVideo(int id, Video video) {
+        Video existing = videoRepository.findById(id).orElse(null);
+        if (existing != null) {
+            existing.setTitle(video.getTitle());
+            existing.setYoutubeId(video.getYoutubeId());
+            return videoRepository.save(existing);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteImage(int id) {
+        imageRepository.deleteById(id);
+    }
 }

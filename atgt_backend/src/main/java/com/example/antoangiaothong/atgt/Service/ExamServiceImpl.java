@@ -125,4 +125,39 @@ public class ExamServiceImpl implements ExamService {
     public Collection<ResultDTO> getRank(int examId) {
         return examRepository.getRankWithUser(examId);
     }
+
+    @Override
+    @Transactional
+    public void deleteExam(int id) {
+        examRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Exam updateExam(int id, Exam exam) {
+        Exam existing = examRepository.findById(id).orElse(null);
+        if (existing != null) {
+            existing.setName(exam.getName());
+            existing.setTime(exam.getTime());
+            existing.setMaxTimes(exam.getMaxTimes());
+            
+            // Re-sync questions
+            questionRepository.deleteAll(existing.getQuestions());
+            Collection<Question> toSave = new ArrayList<>();
+            for (Question q : exam.getQuestions()) {
+                Question ques = new Question();
+                ques.setExam(existing);
+                ques.setQuestion(q.getQuestion());
+                ques.setAnswer(q.getAnswer());
+                ques.setChoice1(q.getChoice1());
+                ques.setChoice2(q.getChoice2());
+                ques.setChoice3(q.getChoice3());
+                ques.setChoice4(q.getChoice4());
+                toSave.add(ques);
+            }
+            questionRepository.saveAll(toSave);
+            return examRepository.save(existing);
+        }
+        return null;
+    }
 }

@@ -14,4 +14,6 @@ public interface ExamService {
     Exam getExamById(int id);
     Result postResult(Result result);
     Collection<ResultDTO> getRank(int examId);
+    void deleteExam(int id);
+    Exam updateExam(int id, Exam exam);
 }

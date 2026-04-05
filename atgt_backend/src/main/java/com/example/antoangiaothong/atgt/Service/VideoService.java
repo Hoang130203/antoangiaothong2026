@@ -13,4 +13,7 @@ public interface VideoService {
     Video getVideoById(int id);
     Collection<Image> getAllImage();
     Image insertImage(Image image,String ownerId);
+    void deleteVideo(int id);
+    Video updateVideo(int id, Video video);
+    void deleteImage(int id);
 }

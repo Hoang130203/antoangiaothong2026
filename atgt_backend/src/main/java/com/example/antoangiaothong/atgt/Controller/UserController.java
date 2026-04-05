@@ -33,7 +33,6 @@ public class UserController {
     @GetMapping("/video")
     @ResponseBody
     public Collection<Video> getVideo(){
-        Video video=new Video();
         return userService.getAllVideo("12");
     }
     @GetMapping("/name")
@@ -138,6 +137,22 @@ public class UserController {
     @DeleteMapping ("/deleteposts/{id}")
     public Post deletePost(@PathVariable Integer id){
         return userService.deletePost(id);
+    }
+
+    @PutMapping("/updatepost/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody Post post) {
+        Post p = userService.findById(post.getUser().getId()).getPosts().stream()
+                .filter(item -> item.getId() == id)
+                .findFirst()
+                .orElse(null);
+        if (p != null) {
+            p.setTitle(post.getTitle());
+            p.setContent(post.getContent());
+            p.setImage(post.getImage());
+            userService.insertPost(p, p.getUser().getId());
+            return ResponseEntity.ok(p);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/allpost")

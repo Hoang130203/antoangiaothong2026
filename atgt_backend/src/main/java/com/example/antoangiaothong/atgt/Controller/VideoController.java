@@ -51,4 +51,21 @@ public class VideoController {
         image.setUrl(url);
         return ResponseEntity.ok(videoService.insertImage(image,ownerId)) ;
     }
+
+    @DeleteMapping("/deleteVideo/{id}")
+    public ResponseEntity<?> deleteVideo(@PathVariable int id) {
+        videoService.deleteVideo(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/updateVideo/{id}")
+    public ResponseEntity<Video> updateVideo(@PathVariable int id, @RequestBody Video video) {
+        return ResponseEntity.ok(videoService.updateVideo(id, video));
+    }
+
+    @DeleteMapping("/deleteImage/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable int id) {
+        videoService.deleteImage(id);
+        return ResponseEntity.ok().build();
+    }
 }

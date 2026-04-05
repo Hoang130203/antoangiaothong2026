@@ -54,4 +54,15 @@ public class ExamController {
     public ResponseEntity<?> getRank(@RequestParam int examId){
         return ResponseEntity.ok(examService.getRank(examId));
     }
+
+    @DeleteMapping("/deleteExam/{id}")
+    public ResponseEntity<?> deleteExam(@PathVariable int id) {
+        examService.deleteExam(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/updateExam/{id}")
+    public ResponseEntity<Exam> updateExam(@PathVariable int id, @RequestBody Exam exam) {
+        return ResponseEntity.ok(examService.updateExam(id, exam));
+    }
 }
